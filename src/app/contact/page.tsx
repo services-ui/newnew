@@ -1,18 +1,44 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
-import { Phone, Mail, Clock, Building2, ShieldCheck, MapPin, ChevronDown, CheckCircle2 } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Phone, Mail, Clock, Building2, ShieldCheck, MapPin, ChevronDown, CheckCircle2, Check } from "lucide-react";
+
+const SUBJECTS = [
+  "Wealth Creation",
+  "Retirement Planning",
+  "Tax Optimization",
+  "Investment Planning",
+  "Risk Mitigation",
+  "Estate Planning",
+  "Asset Management",
+  "General Support",
+];
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
-    subject: "Wealth Creation",
+    subject: ["Wealth Creation"] as string[],
     message: "",
     agree: false,
   });
+
+  const [subjectOpen, setSubjectOpen] = useState(false);
+  const subjectRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const close = (e: MouseEvent) => {
+      if (subjectRef.current && !subjectRef.current.contains(e.target as Node)) setSubjectOpen(false);
+    };
+    const esc = (e: KeyboardEvent) => { if (e.key === "Escape") setSubjectOpen(false); };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", esc);
+    return () => { document.removeEventListener("mousedown", close); document.removeEventListener("keydown", esc); };
+  }, []);
+  const toggleSubject = (name: string) =>
+    setFormData((f) => ({ ...f, subject: f.subject.includes(name) ? f.subject.filter((x) => x !== name) : [...f.subject, name] }));
+  const subjectText = formData.subject.length ? formData.subject.join(", ") : "General Support";
 
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,7 +58,7 @@ Client Details:
 Name: ${formData.name}
 Email: ${formData.email}
 Mobile Number: ${formData.phone}
-Subject: ${formData.subject}
+Subject: ${subjectText}
 
 Message:
 ----------------------------------
@@ -51,8 +77,8 @@ ${formData.message}
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
-          subject: `Fintness Inquiry: ${formData.subject}`,
-          inquiry_subject: formData.subject,
+          subject: `Fintness Inquiry: ${subjectText}`,
+          inquiry_subject: subjectText,
           message: emailBody.trim(),
           from_name: "Fintness Finserv Website",
         }),
@@ -65,7 +91,7 @@ ${formData.message}
           name: "",
           email: "",
           phone: "",
-          subject: "Wealth Creation",
+          subject: ["Wealth Creation"] as string[],
           message: "",
           agree: false,
         });
@@ -168,22 +194,42 @@ ${formData.message}
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-semibold uppercase tracking-wider text-white/50 ml-1">Subject of Inquiry</label>
-                  <div className="relative">
-                    <select
-                      value={formData.subject}
-                      onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                      className="w-full px-4 py-3.5 rounded-xl bg-[#1F2937]/50 border border-transparent text-white focus:outline-none focus:border-white/10 focus:bg-white/10 transition-all duration-300 text-sm font-medium appearance-none cursor-pointer"
+                  <div className="relative" ref={subjectRef}>
+                    <button
+                      type="button"
+                      aria-haspopup="listbox"
+                      aria-expanded={subjectOpen}
+                      onClick={() => setSubjectOpen((o) => !o)}
+                      className="w-full px-4 py-3.5 pr-11 rounded-xl bg-[#1F2937]/50 border border-transparent text-white focus:outline-none focus:border-white/10 focus:bg-white/10 transition-all duration-300 text-sm font-medium text-left cursor-pointer min-h-[50px]"
                     >
-                      <option className="bg-[#141C2B] text-white">Wealth Creation</option>
-                      <option className="bg-[#141C2B] text-white">Retirement Planning</option>
-                      <option className="bg-[#141C2B] text-white">Tax Optimization</option>
-                      <option className="bg-[#141C2B] text-white">Investment Planning</option>
-                      <option className="bg-[#141C2B] text-white">Risk Mitigation</option>
-                      <option className="bg-[#141C2B] text-white">Estate Planning</option>
-                      <option className="bg-[#141C2B] text-white">Asset Management</option>
-                      <option className="bg-[#141C2B] text-white">General Support</option>
-                    </select>
-                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 pointer-events-none" />
+                      {formData.subject.length ? (
+                        <span className="flex flex-wrap gap-1.5">
+                          {formData.subject.map((x) => (
+                            <span key={x} className="px-2.5 py-0.5 rounded-full bg-[#0066FF]/25 text-white text-xs">{x}</span>
+                          ))}
+                        </span>
+                      ) : (
+                        <span className="text-white/30">Select one or more</span>
+                      )}
+                    </button>
+                    <ChevronDown className={`absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 pointer-events-none transition-transform ${subjectOpen ? "rotate-180" : ""}`} />
+                    {subjectOpen && (
+                      <ul role="listbox" aria-multiselectable="true" className="absolute z-30 mt-2 w-full rounded-xl bg-[#141C2B] border border-white/10 shadow-xl py-1.5 max-h-72 overflow-auto">
+                        {SUBJECTS.map((name) => {
+                          const on = formData.subject.includes(name);
+                          return (
+                            <li key={name} role="option" aria-selected={on}>
+                              <button type="button" onClick={() => toggleSubject(name)} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-white/90 hover:bg-white/5 text-left">
+                                <span className={`w-4 h-4 rounded border flex items-center justify-center ${on ? "bg-[#0066FF] border-[#0066FF]" : "border-white/30"}`}>
+                                  {on && <Check className="w-3 h-3 text-white" />}
+                                </span>
+                                {name}
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
                   </div>
                 </div>
               </div>
@@ -349,3 +395,4 @@ ${formData.message}
     </main>
   );
 }
+ 

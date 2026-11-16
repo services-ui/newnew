@@ -48,7 +48,7 @@ export default function StatsBanner() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-0 divide-x-0 md:divide-x divide-y md:divide-y-0 divide-[#1a1a2e]/10">
           
           <StatItem 
-            endValue={10} 
+            endValue={14} 
             suffix="+" 
             title="Years" 
             subtitle="Proven Expertise" 
