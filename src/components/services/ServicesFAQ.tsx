@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { Plus } from "lucide-react";
 
 const faqs = [
   {
@@ -54,27 +54,44 @@ const faqs = [
   }
 ];
 
-function AccordionItem({ question, answer, isOpen, onClick }: { question: string, answer: string, isOpen: boolean, onClick: () => void }) {
+function AccordionItem({ id, question, answer, isOpen, onClick }: { id: string; question: string; answer: string; isOpen: boolean; onClick: () => void }) {
   return (
-    <div className="border-b border-slate-200 last:border-0">
-      <button
-        className="w-full py-6 flex items-center justify-between text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-sm"
-        onClick={onClick}
-      >
-        <span className={`text-lg font-medium transition-colors ${isOpen ? 'text-blue-600' : 'text-slate-800'}`}>
-          {question}
-        </span>
-        <ChevronDown 
-          className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-blue-600' : ''}`} 
-        />
-      </button>
-      <div 
-        className={`grid transition-all duration-300 ease-in-out ${
-          isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+    <div className="border-b border-hair first:border-t">
+      <h4>
+        <button
+          type="button"
+          id={`${id}-q`}
+          aria-expanded={isOpen}
+          aria-controls={`${id}-a`}
+          onClick={onClick}
+          className="group flex w-full items-start justify-between gap-6 py-6 text-left"
+        >
+          <span
+            className={`text-[1.12rem] font-medium leading-[1.35] tracking-[-0.02em] transition-colors duration-200 ${
+              isOpen ? "text-fin" : "text-ink group-hover:text-fin"
+            }`}
+          >
+            {question}
+          </span>
+          <Plus
+            aria-hidden
+            strokeWidth={1.7}
+            className={`mt-0.5 h-5 w-5 shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+              isOpen ? "rotate-45 text-fin" : "text-ink/40"
+            }`}
+          />
+        </button>
+      </h4>
+      <div
+        id={`${id}-a`}
+        role="region"
+        aria-labelledby={`${id}-q`}
+        className={`grid transition-[grid-template-rows] duration-[320ms] ease-[cubic-bezier(0.23,1,0.32,1)] ${
+          isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
         }`}
       >
         <div className="overflow-hidden">
-          <p className="pb-6 text-slate-600 text-base leading-relaxed pr-8">
+          <p className={`t-body max-w-[40rem] pb-6 pr-10 transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0"}`}>
             {answer}
           </p>
         </div>
@@ -91,26 +108,31 @@ export function ServicesFAQ() {
   };
 
   return (
-    <section className="py-24 bg-slate-50">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Frequently Asked Questions</h2>
-          <p className="text-lg text-slate-600">Find answers to common questions about our wealth management services.</p>
+    <section className="sec bg-paper" aria-labelledby="faq-title">
+      <div className="wrap">
+        <div className="max-w-[44rem]">
+          <h2 id="faq-title" className="t-h1" data-rv="up">Frequently Asked Questions</h2>
+          <p className="t-lead mt-6" data-rv="up" style={{ ["--d" as string]: "80ms" } as React.CSSProperties}>
+            Find answers to common questions about our wealth management services.
+          </p>
         </div>
 
-        <div className="space-y-12">
+        <div className="mt-16 lg:mt-24">
           {faqs.map((category, catIdx) => (
-            <div key={catIdx} className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100">
-              <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center">
-                <span className="w-1.5 h-6 bg-blue-500 rounded-full mr-3"></span>
+            <div key={category.category} className="grid gap-6 border-t border-ink py-10 lg:grid-cols-12 lg:gap-12 lg:py-14">
+              <h3 className="t-h3 lg:col-span-4 lg:sticky lg:top-28 lg:self-start">
+                <span aria-hidden className="tnum mr-3 font-mono text-[0.72rem] tracking-wide text-fin">
+                  {String(catIdx + 1).padStart(2, "0")}
+                </span>
                 {category.category}
               </h3>
-              <div>
+              <div className="lg:col-span-8">
                 {category.questions.map((q, qIdx) => {
                   const id = `${catIdx}-${qIdx}`;
                   return (
                     <AccordionItem
-                      key={qIdx}
+                      key={id}
+                      id={`faq-${id}`}
                       question={q.q}
                       answer={q.a}
                       isOpen={openIndex === id}

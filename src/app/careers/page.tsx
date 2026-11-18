@@ -1,21 +1,20 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { 
-  TrendingUp, 
-  Layers, 
-  ShieldCheck, 
-  Mail, 
-  MapPin, 
-  User, 
+import {
+  TrendingUp,
+  ShieldCheck,
+  Mail,
+  MapPin,
+  User,
   Users,
-  Briefcase, 
+  Briefcase,
   FileText,
   SearchX,
-  Send
+  Send,
+  ChevronDown,
 } from "lucide-react";
 import { useState } from "react";
-import Link from "next/link";
+import RevealText from "@/components/ui/RevealText";
 
 export default function CareersPage() {
   const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success">("idle");
@@ -53,211 +52,198 @@ export default function CareersPage() {
   ];
 
   return (
-    <main className="bg-white min-h-screen text-[#1a1a2e] font-sans pt-32 pb-24 px-6 md:px-12 w-full relative overflow-hidden">
-      {/* Background ambient glows */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#0066FF] rounded-full blur-[200px] opacity-[0.03] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#00B2FF] rounded-full blur-[200px] opacity-[0.03] pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto space-y-24">
-        
-        {/* Why Join Us Section */}
-        <section className="text-center space-y-12">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="space-y-4 max-w-2xl mx-auto"
-          >
-            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-[#1a1a2e]">
-              Why Join <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0066FF] to-[#00B2FF]">Us</span>
-            </h1>
-            <p className="text-[#1a1a2e]/60 text-base md:text-lg">
+    <main id="main" className="bg-white text-ink">
+      {/* Why join us */}
+      <section aria-labelledby="careers-title" className="relative overflow-hidden pb-[clamp(64px,9vw,128px)] pt-[8.5rem] md:pt-44">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -left-[10%] -top-[25%] h-[70%] w-[50%] rounded-full opacity-60 blur-[110px]"
+          style={{ background: "radial-gradient(closest-side, rgb(0 140 255 / 0.18), transparent)" }}
+        />
+        <div className="wrap relative">
+          <div className="grid items-end gap-8 lg:grid-cols-12 lg:gap-12">
+            <RevealText
+              as="h1"
+              id="careers-title"
+              on="load"
+              delay={100}
+              className="t-display lg:col-span-7"
+              parts={["Why Join ", { t: "Us", className: "grad" }]}
+            />
+            <p className="t-lead lg:col-span-4 lg:col-start-9" data-rv-load-up style={{ ["--d" as string]: "600ms" } as React.CSSProperties}>
               We build more than portfolios; we build legacies. Our culture is the bedrock of our success.
             </p>
-          </motion.div>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <ul className="mt-16 grid border-t border-ink md:grid-cols-3 lg:mt-24">
             {features.map((feature, idx) => {
               const Icon = feature.icon;
               return (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: idx * 0.1 }}
-                  className="bg-white border border-[#1a1a2e]/10 shadow-[0_8px_30px_rgba(0,0,0,0.06)] p-8 rounded-3xl text-left hover:shadow-[0_16px_40px_rgba(0,102,255,0.12)] hover:-translate-y-2 transition-all duration-300 group"
+                <li
+                  key={feature.title}
+                  data-rv="up"
+                  style={{ ["--d" as string]: `${idx * 100}ms` } as React.CSSProperties}
+                  className={`group py-10 md:px-9 md:py-12 ${idx === 0 ? "md:pl-0" : "md:border-l md:border-hair"} ${idx === 2 ? "md:pr-0" : ""} ${idx > 0 ? "border-t border-hair md:border-t-0" : ""}`}
                 >
-                  <div className="w-12 h-12 rounded-2xl bg-[#0066FF]/5 flex items-center justify-center text-[#0066FF] mb-6 group-hover:scale-110 transition-transform duration-300">
-                    <Icon className="w-6 h-6" />
+                  <div className="flex items-center justify-between">
+                    <span aria-hidden className="flex h-12 w-12 items-center justify-center rounded-full bg-fin/10 text-fin transition-colors duration-300 group-hover:bg-fin group-hover:text-white">
+                      <Icon className="h-[22px] w-[22px]" strokeWidth={1.6} />
+                    </span>
+                    <span aria-hidden className="tnum font-mono text-[0.72rem] tracking-wide text-ink/35">
+                      {String(idx + 1).padStart(2, "0")}
+                    </span>
                   </div>
-                  <h3 className="text-xl font-bold tracking-tight mb-1.5 text-[#1a1a2e]">
-                    {feature.title}
-                  </h3>
-                  <p className="text-[13px] font-semibold text-[#0052CC] mb-3.5 italic">
+                  <h2 className="t-h3 mt-8">{feature.title}</h2>
+                  <p className="serif mt-3 text-[1.05rem] text-fin">
                     &ldquo;{feature.subtitle}&rdquo;
                   </p>
-                  <p className="text-sm text-slate-600 font-medium leading-relaxed">
-                    {feature.desc}
-                  </p>
-                </motion.div>
+                  <p className="t-body mt-5">{feature.desc}</p>
+                </li>
               );
             })}
-          </div>
-        </section>
+          </ul>
+        </div>
+      </section>
 
-        {/* Current Openings Section */}
-        <section className="space-y-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#1a1a2e]/10 pb-6">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl font-extrabold tracking-tight text-[#1a1a2e]">Current Openings</h2>
-              <p className="text-[#1a1a2e]/50 mt-1">Find your place in our growing ecosystem.</p>
-            </motion.div>
+      {/* Current openings */}
+      <section aria-labelledby="openings-title" className="bg-paper py-[clamp(64px,8vw,112px)]">
+        <div className="wrap">
+          <div className="grid items-end gap-4 border-b border-ink pb-8 md:grid-cols-[1fr_auto]">
+            <h2 id="openings-title" className="t-h2">Current Openings</h2>
+            <p className="t-lead md:text-right">Find your place in our growing ecosystem.</p>
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="bg-[#1a1a2e]/[0.02] border border-[#1a1a2e]/5 rounded-3xl p-12 text-center flex flex-col items-center justify-center space-y-5"
-          >
-            <div className="w-20 h-20 rounded-full bg-white shadow-sm border border-[#1a1a2e]/5 flex items-center justify-center text-[#1a1a2e]/30">
-              <SearchX className="w-8 h-8" />
-            </div>
-            <div className="space-y-2 max-w-md mx-auto">
-              <h3 className="text-xl font-bold text-[#1a1a2e]">No active openings right now</h3>
-              <p className="text-sm text-[#1a1a2e]/60 leading-relaxed">
-                We currently don't have any open positions that match our active recruitment cycle. However, Fintness Finserv is always evolving. 
-              </p>
-            </div>
-          </motion.div>
-        </section>
+          <div className="flex flex-col items-center px-4 py-16 text-center md:py-24" data-rv="up">
+            <span aria-hidden className="flex h-20 w-20 items-center justify-center rounded-full bg-white text-ink/35 shadow-[var(--shadow-card)]">
+              <SearchX className="h-8 w-8" strokeWidth={1.4} />
+            </span>
+            <h3 className="mt-7 text-[1.35rem] font-semibold tracking-[-0.025em]">No active openings right now</h3>
+            <p className="t-body mt-3 max-w-[28rem]">
+              We currently don&apos;t have any open positions that match our active recruitment cycle. However, Fintness Finserv is always evolving.
+            </p>
+          </div>
+        </div>
+      </section>
 
-        {/* Start Your Journey Section */}
-        <section className="relative grid grid-cols-1 lg:grid-cols-2 gap-12 bg-[#1a1a2e] overflow-hidden rounded-3xl p-10 md:p-16 shadow-2xl">
-          {/* Background elements to match CTA */}
-          <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-[#0066FF]/20 to-transparent opacity-50 pointer-events-none" />
-          <div className="absolute -bottom-20 -left-20 w-[300px] h-[300px] bg-[#00B2FF] rounded-full blur-[120px] opacity-30 pointer-events-none" />
-          
-          <div className="flex flex-col justify-center space-y-10 relative z-10">
-            <div className="space-y-6">
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-white leading-tight">
-                Start Your Journey
-              </h2>
-              <p className="text-[#a0aabf] text-lg leading-relaxed max-w-md">
-                Don't see a role that fits? We are always looking for exceptional talent. Submit your credentials for our "Architect Talent Pool."
-              </p>
-            </div>
+      {/* Start your journey */}
+      <section aria-labelledby="journey-title" className="bg-night on-dark grain relative isolate overflow-hidden">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -bottom-1/3 -left-[10%] -z-10 h-[90%] w-[55%] opacity-70 blur-[100px]"
+          style={{ background: "radial-gradient(closest-side, rgb(0 102 255 / 0.45), transparent)" }}
+        />
+        <div className="wrap grid gap-14 py-[clamp(72px,10vw,144px)] lg:grid-cols-12 lg:gap-20">
+          <div className="lg:col-span-5">
+            <RevealText as="h2" id="journey-title" className="t-h1 text-white" parts={["Start Your Journey"]} />
+            <p className="mt-7 max-w-[28rem] text-[1.1rem] leading-[1.6] text-[var(--on-dark-soft)]" data-rv="up">
+              Don&apos;t see a role that fits? We are always looking for exceptional talent. Submit your credentials for our &quot;Architect Talent Pool.&quot;
+            </p>
 
-            <div className="space-y-5 pt-4">
-              <div className="flex items-center gap-4">
-                <div className="shrink-0 w-10 h-10 rounded-full border border-white/10 bg-white/5 flex items-center justify-center">
-                  <Mail className="w-5 h-5 text-[#00A3FF]" />
-                </div>
+            <ul className="mt-12 space-y-7">
+              <li className="flex items-center gap-4">
+                <span aria-hidden className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full shadow-[inset_0_0_0_1px_rgb(255_255_255/0.2)]">
+                  <Mail className="h-[18px] w-[18px] text-[#6fb4ff]" strokeWidth={1.8} />
+                </span>
                 <div>
-                  <p className="text-xs uppercase tracking-wider text-[#a0aabf] font-bold mb-0.5">Email Us</p>
-                  <a href="mailto:mail@fintness.in" className="text-sm font-semibold text-white hover:text-[#00A3FF] transition-colors">
+                  <p className="t-label text-white/45">Email Us</p>
+                  <a href="mailto:mail@fintness.in" className="ulink mt-1 inline-block text-[1rem] font-semibold text-white transition-colors hover:text-[#6fb4ff]">
                     mail@fintness.in
                   </a>
                 </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="shrink-0 w-10 h-10 rounded-full border border-white/10 bg-white/5 flex items-center justify-center">
-                  <MapPin className="w-5 h-5 text-[#00A3FF]" />
-                </div>
+              </li>
+              <li className="flex items-center gap-4">
+                <span aria-hidden className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full shadow-[inset_0_0_0_1px_rgb(255_255_255/0.2)]">
+                  <MapPin className="h-[18px] w-[18px] text-[#6fb4ff]" strokeWidth={1.8} />
+                </span>
                 <div>
-                  <p className="text-xs uppercase tracking-wider text-[#a0aabf] font-bold mb-0.5">Office</p>
-                  <p className="text-sm font-semibold text-white">
+                  <p className="t-label text-white/45">Office</p>
+                  <p className="mt-1 text-[1rem] font-semibold leading-snug text-white">
                     House No. 164, Adarsh Nagar,<br />
                     Jaipur, Rajasthan – 302004
                   </p>
                 </div>
-              </div>
-            </div>
+              </li>
+            </ul>
           </div>
 
-          <div className="flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-white/10 pt-12 lg:pt-0 lg:pl-16 relative z-10">
-            <motion.form
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              onSubmit={handleSubmit}
-              className="space-y-6"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-white flex items-center gap-2">
-                    <User className="w-3.5 h-3.5 text-[#00A3FF]" /> Full Name
+          <div className="lg:col-span-7">
+            <form onSubmit={handleSubmit} className="space-y-6 rounded-[var(--r-l)] bg-white/[0.04] p-7 shadow-[inset_0_0_0_1px_rgb(255_255_255/0.1)] sm:p-10" data-rv="up">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div>
+                  <label htmlFor="cr-name" className="field-label flex items-center gap-2">
+                    <User className="h-3.5 w-3.5 text-[#6fb4ff]" aria-hidden /> Full Name
                   </label>
-                  <input 
-                    type="text" 
+                  <input
+                    id="cr-name"
+                    type="text"
                     required
                     readOnly
-                    placeholder="John Doe" 
-                    className="w-full bg-[#1A1F2D] border-none rounded-xl px-5 py-4 text-sm text-white placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#00A3FF] transition-all opacity-60 cursor-not-allowed"
+                    placeholder="John Doe"
+                    className="field cursor-not-allowed opacity-60"
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-white flex items-center gap-2">
-                    <Mail className="w-3.5 h-3.5 text-[#00A3FF]" /> Email Address
+                <div>
+                  <label htmlFor="cr-email" className="field-label flex items-center gap-2">
+                    <Mail className="h-3.5 w-3.5 text-[#6fb4ff]" aria-hidden /> Email Address
                   </label>
-                  <input 
-                    type="email" 
+                  <input
+                    id="cr-email"
+                    type="email"
                     required
                     readOnly
-                    placeholder="john@company.com" 
-                    className="w-full bg-[#1A1F2D] border-none rounded-xl px-5 py-4 text-sm text-white placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#00A3FF] transition-all opacity-60 cursor-not-allowed"
+                    placeholder="john@company.com"
+                    className="field cursor-not-allowed opacity-60"
                   />
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-white flex items-center gap-2">
-                  <Briefcase className="w-3.5 h-3.5 text-[#00A3FF]" /> Role of Interest
+              <div>
+                <label htmlFor="cr-role" className="field-label flex items-center gap-2">
+                  <Briefcase className="h-3.5 w-3.5 text-[#6fb4ff]" aria-hidden /> Role of Interest
                 </label>
-                <select 
-                  required
-                  defaultValue=""
-                  className="w-full bg-[#1A1F2D] border-none rounded-xl px-5 py-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#00A3FF] transition-all appearance-none cursor-pointer"
-                  style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%236b7280\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\'%3E%3C/path%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1.25rem center', backgroundSize: '1.2em' }}
-                >
-                  <option value="" disabled>Select an area of interest...</option>
-                  <option value="wealth-advisor">Wealth Advisor</option>
-                  <option value="financial-analyst">Financial Analyst</option>
-                  <option value="compliance-officer">Compliance Officer</option>
-                  <option value="institutional-growth">Institutional Growth</option>
-                  <option value="other">Other / Spontaneous Application</option>
-                </select>
+                <div className="relative">
+                  <select
+                    id="cr-role"
+                    required
+                    defaultValue=""
+                    className="field cursor-pointer appearance-none pr-11"
+                  >
+                    <option value="" disabled>Select an area of interest...</option>
+                    <option value="wealth-advisor">Wealth Advisor</option>
+                    <option value="financial-analyst">Financial Analyst</option>
+                    <option value="compliance-officer">Compliance Officer</option>
+                    <option value="institutional-growth">Institutional Growth</option>
+                    <option value="other">Other / Spontaneous Application</option>
+                  </select>
+                  <ChevronDown aria-hidden className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-white flex items-center gap-2">
-                  <FileText className="w-3.5 h-3.5 text-[#00A3FF]" /> Professional Bio / Cover Note
+              <div>
+                <label htmlFor="cr-note" className="field-label flex items-center gap-2">
+                  <FileText className="h-3.5 w-3.5 text-[#6fb4ff]" aria-hidden /> Professional Bio / Cover Note
                 </label>
-                <textarea 
+                <textarea
+                  id="cr-note"
                   required
                   rows={4}
-                  placeholder="Tell us about your approach to finance..." 
-                  className="w-full bg-[#1A1F2D] border-none rounded-xl px-5 py-4 text-sm text-white placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#00A3FF] transition-all resize-none"
+                  placeholder="Tell us about your approach to finance..."
+                  className="field min-h-[130px] resize-none"
                 />
               </div>
 
               <button
                 type="button"
                 disabled={true}
-                className="w-full py-4 mt-2 rounded-xl font-bold text-sm tracking-wide transition-all duration-300 flex items-center justify-center gap-2 bg-white/10 text-white/40 border border-white/5 cursor-not-allowed opacity-50"
+                className="btn btn-ghost w-full opacity-50"
               >
                 Submit Application
-                <Send className="w-4 h-4 ml-1" />
+                <Send className="h-4 w-4" aria-hidden />
               </button>
-            </motion.form>
+            </form>
           </div>
-        </section>
-
-      </div>
+        </div>
+      </section>
     </main>
   );
 }

@@ -1,136 +1,211 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
+import React, { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
+import { X } from "lucide-react";
+import { CtaLink } from "@/components/ui/cta";
 
-const AnimatedNavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
-  const defaultTextColor = 'text-[#1a1a2e]/60';
-  const hoverTextColor = 'text-[#1a1a2e]';
-  const textSizeClass = 'text-sm font-medium tracking-wide';
-
-  return (
-    <Link href={href} className={`group relative inline-block overflow-hidden h-5 flex items-center ${textSizeClass}`}>
-      <div className="flex flex-col transition-transform duration-[400ms] ease-out transform group-hover:-translate-y-1/2">
-        <span className={defaultTextColor}>{children}</span>
-        <span className={hoverTextColor}>{children}</span>
-      </div>
-    </Link>
-  );
-};
+const navLinksData = [
+  { label: "Home", href: "/" },
+  { label: "About Us", href: "/about" },
+  { label: "Services", href: "/services" },
+  { label: "Careers", href: "/careers" },
+  { label: "Contact Us", href: "/contact" },
+  { label: "Events", href: "/events" },
+];
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [hovered, setHovered] = useState<string | null>(null);
+  const pathname = usePathname();
+  const barRef = useRef<HTMLElement>(null);
+  const menuId = "site-menu";
 
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
+  const crmUrl = process.env.NEXT_PUBLIC_CRM_URL || "https://crm.fintness.in";
 
-  // Modern minimal dot logo or FINTNESS text mapping
-  const logoElement = (
-    <div className="flex items-center gap-3">
-      <img src="/logo.png" alt="Fintness Finserv Logo" className="w-8 h-8 object-contain rounded-full" />
-      <span className="text-[#1a1a2e] font-semibold tracking-tighter text-xs sm:text-sm md:text-base">FINTNESS FINSERV</span>
-    </div>
-  );
+  // Compact the bar after the first screen scroll. Toggles an attribute (no React state per scroll event).
+  useEffect(() => {
+    const el = barRef.current;
+    if (!el) return;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      el.toggleAttribute("data-scrolled", window.scrollY > 24);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
 
-  const navLinksData = [
-    { label: 'Home', href: '/' },
-    { label: 'About Us', href: '/about' },
-    { label: 'Services', href: '/services' },
-    { label: 'Careers', href: '/careers' },
-    { label: 'Contact Us', href: '/contact' },
-    { label: 'Events', href: '/events' },
-  ];
+  // Close the sheet on navigation (state adjusted during render, not in an effect).
+  const [seenPath, setSeenPath] = useState(pathname);
+  if (seenPath !== pathname) {
+    setSeenPath(pathname);
+    setIsOpen(false);
+  }
 
+  // Lock page scroll + Esc to close while the sheet is open.
+  useEffect(() => {
+    if (!isOpen) return;
+    const prev = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.documentElement.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [isOpen]);
 
-
-  const crmUrl = process.env.NEXT_PUBLIC_CRM_URL || 'https://crm.fintness.in';
-
-  const loginButtonElement = (
-    <a
-      href={crmUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="px-5 py-2.5 xl:px-4 xl:py-2 text-sm border border-[#1a1a2e]/10 bg-[#1a1a2e]/[0.03] text-[#1a1a2e]/60 rounded-full hover:border-[#0066FF]/40 hover:text-[#1a1a2e] transition-colors duration-200 w-full xl:w-auto font-medium inline-flex items-center justify-center text-center"
-    >
-      Login
-    </a>
-  );
-
-  const signupButtonElement = (
-    <div className="relative group w-full xl:w-auto">
-       <Link href="/contact" className="relative z-10 px-5 py-2.5 xl:px-4 xl:py-2 text-sm font-semibold text-white bg-gradient-to-r from-[#0066FF] to-[#00B2FF] rounded-full hover:scale-105 transition-all duration-300 w-full xl:w-auto shadow-md border border-transparent inline-flex items-center justify-center text-center">
-          Get Started
-       </Link>
-    </div>
-  );
+  const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
   return (
-    <header className={`fixed top-4 md:top-6 left-1/2 [transform:translate3d(-50%,0,0)] isolate will-change-transform z-50
-                       flex flex-col items-center
-                       px-4 md:px-6 py-2 md:py-3 backdrop-blur-md
-                       rounded-3xl
-                       border border-[#1a1a2e]/10 bg-white/80 shadow-[0_8px_32px_rgba(0,102,255,0.08)]
-                       w-[calc(100%-2rem)] xl:w-max max-w-[95vw] xl:max-w-7xl
-                       transition-all duration-500 ease-in-out`}>
+    <>
+      {/* scrim — only the sheet is modal, the bar stays reachable */}
+      <div
+        aria-hidden
+        onClick={() => setIsOpen(false)}
+        className={`fixed inset-0 z-40 bg-ink/35 transition-opacity duration-300 lg:hidden ${
+          isOpen ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+      />
 
-      <div className="flex items-center justify-between w-full gap-x-4 md:gap-x-6 xl:gap-x-10">
-        <Link href="/" className="flex items-center shrink-0">
-           {logoElement}
-        </Link>
+      <header
+        ref={barRef}
+        className="group/nav fixed left-1/2 top-2.5 z-50 w-[min(100%-1.5rem,1060px)] -translate-x-1/2 sm:top-3"
+      >
+        <div
+          className="relative flex h-[50px] items-center justify-between gap-4 rounded-full bg-white/95 pl-2.5 pr-2
+                     shadow-[0_0_0_1px_rgb(11_21_38/0.07),0_10px_30px_-14px_rgb(11_21_38/0.28)]
+                     transition-[height,background-color,box-shadow] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]
+                     group-data-[scrolled]/nav:h-[46px] group-data-[scrolled]/nav:bg-white
+                     group-data-[scrolled]/nav:shadow-[0_0_0_1px_rgb(11_21_38/0.08),0_18px_40px_-16px_rgb(11_21_38/0.4)]"
+        >
+          <Link href="/" className="flex shrink-0 items-center gap-2 rounded-full py-1 pr-2" aria-label="Fintness Finserv — home">
+            <Image src="/logo.png" alt="Fintness Finserv Logo" width={28} height={28} className="h-[28px] w-[28px] rounded-full object-contain" priority />
+            <span className="text-[12.5px] font-semibold tracking-[-0.02em] text-ink sm:text-[14px]">FINTNESS FINSERV</span>
+          </Link>
 
-        <nav className="hidden xl:flex items-center space-x-6 text-sm shrink-0">
-          {navLinksData.map((link) => (
-            <AnimatedNavLink key={link.href} href={link.href}>
-              {link.label}
-            </AnimatedNavLink>
-          ))}
-        </nav>
+          <nav aria-label="Primary" className="hidden items-center lg:flex" onMouseLeave={() => setHovered(null)}>
+            <ul className="flex items-center gap-0.5">
+              {navLinksData.map((link) => {
+                const active = isActive(link.href);
+                return (
+                  <li key={link.href} className="relative">
+                    <Link
+                      href={link.href}
+                      aria-current={active ? "page" : undefined}
+                      onMouseEnter={() => setHovered(link.href)}
+                      onFocus={() => setHovered(link.href)}
+                      onBlur={() => setHovered(null)}
+                      className={`relative z-10 block rounded-full px-3 py-1.5 text-[13.5px] font-medium tracking-[-0.01em] transition-colors duration-200 ${
+                        active ? "text-ink" : "text-ink/60 hover:text-ink"
+                      }`}
+                    >
+                      {link.label}
+                      {active && (
+                        <span aria-hidden className="absolute bottom-[3px] left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-fin" />
+                      )}
+                    </Link>
+                    {hovered === link.href && (
+                      <motion.span
+                        layoutId="nav-hover"
+                        aria-hidden
+                        className="absolute inset-0 rounded-full bg-ink/[0.055]"
+                        transition={{ type: "spring", duration: 0.38, bounce: 0 }}
+                      />
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
 
-        <div className="flex items-center gap-3 shrink-0">
-          {/* Mobile & Tablet Get Started Button (animates out on open) */}
-          <div className={`xl:hidden transition-all duration-500 ease-in-out origin-right overflow-hidden flex items-center
-                           ${isOpen ? 'w-0 opacity-0 scale-75 pointer-events-none mr-0' : 'w-[96px] opacity-100 scale-100 mr-2'}`}>
-            <Link 
-              href="/contact" 
-              className="px-3 py-1.5 text-xs font-semibold text-white bg-gradient-to-r from-[#0066FF] to-[#00B2FF] rounded-full hover:scale-105 active:scale-95 hover:shadow-[0_0_15px_rgba(0,102,255,0.4)] transition-all duration-300 shadow-md border border-transparent inline-flex items-center justify-center text-center w-full whitespace-nowrap"
-            >
+          <div className="flex shrink-0 items-center gap-2">
+            <CtaLink href="/contact" size="sm" className="[--h:36px] !px-4 !text-[13px] sm:!px-[1.1rem]">
               Get Started
-            </Link>
+            </CtaLink>
+            <a
+              href={crmUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-ghost btn-sm hidden [--h:36px] !px-4 !text-[13px] lg:inline-flex"
+            >
+              Login
+            </a>
+            <button
+              type="button"
+              className="relative flex h-[38px] w-[38px] items-center justify-center rounded-full text-ink shadow-[inset_0_0_0_1px_rgb(11_21_38/0.14)] transition-transform duration-150 active:scale-95 lg:hidden"
+              onClick={() => setIsOpen((o) => !o)}
+              aria-label={isOpen ? "Close Menu" : "Open Menu"}
+              aria-expanded={isOpen}
+              aria-controls={menuId}
+            >
+              {isOpen ? (
+                <X className="h-[18px] w-[18px]" strokeWidth={2} aria-hidden />
+              ) : (
+                <span aria-hidden className="flex flex-col gap-[5px]">
+                  <span className="block h-[1.6px] w-[18px] rounded-full bg-current" />
+                  <span className="block h-[1.6px] w-[12px] rounded-full bg-current" />
+                </span>
+              )}
+            </button>
           </div>
+        </div>
 
-          {/* Desktop Buttons */}
-          <div className="hidden xl:flex items-center gap-3">
-            {signupButtonElement}
-            {loginButtonElement}
+        {/* Mobile sheet — one entrance for the whole panel, its items are simply there */}
+        <div
+          id={menuId}
+          data-open={isOpen || undefined}
+          aria-hidden={!isOpen}
+          inert={!isOpen}
+          className="pointer-events-none mt-2 origin-top scale-[0.97] rounded-[28px] bg-white p-3 opacity-0 shadow-[0_0_0_1px_rgb(11_21_38/0.07),0_30px_60px_-20px_rgb(11_21_38/0.45)]
+                     transition-[opacity,scale] duration-[160ms] ease-[cubic-bezier(0.23,1,0.32,1)]
+                     data-[open]:pointer-events-auto data-[open]:scale-100 data-[open]:opacity-100 data-[open]:duration-[240ms] lg:hidden"
+        >
+          <nav aria-label="Mobile">
+            <ul className="flex flex-col">
+              {navLinksData.map((link) => {
+                const active = isActive(link.href);
+                return (
+                  <li key={link.href} className="border-b border-hair last:border-0">
+                    <Link
+                      href={link.href}
+                      onClick={() => setIsOpen(false)}
+                      aria-current={active ? "page" : undefined}
+                      className={`flex items-center justify-between rounded-xl px-4 py-[15px] text-[22px] font-semibold tracking-[-0.03em] ${
+                        active ? "text-fin" : "text-ink"
+                      }`}
+                    >
+                      {link.label}
+                      {active && <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-fin" />}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+          <div className="mt-3 grid grid-cols-2 gap-2 p-1">
+            <CtaLink href="/contact" onClick={() => setIsOpen(false)}>
+              Get Started
+            </CtaLink>
+            <a href={crmUrl} target="_blank" rel="noopener noreferrer" className="btn btn-ghost">
+              Login
+            </a>
           </div>
-
-          {/* Hamburger Menu Toggle */}
-          <button className="xl:hidden flex items-center justify-center w-8 h-8 text-[#1a1a2e]/60 focus:outline-none shrink-0 border border-[#1a1a2e]/10 rounded-full bg-[#1a1a2e]/[0.03]" onClick={toggleMenu} aria-label={isOpen ? 'Close Menu' : 'Open Menu'}>
-            {isOpen ? (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            ) : (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-            )}
-          </button>
         </div>
-      </div>
-
-      {/* Mobile Menu */}
-      <div className={`xl:hidden flex flex-col items-center w-full transition-all ease-in-out duration-500 overflow-hidden
-                       ${isOpen ? 'max-h-[500px] opacity-100 pt-6 pb-2' : 'max-h-0 opacity-0 pt-0 pb-0 pointer-events-none'}`}>
-        <nav className="flex flex-col items-center space-y-5 text-base w-full">
-          {navLinksData.map((link) => (
-            <Link key={link.href} href={link.href} onClick={toggleMenu} className="text-[#1a1a2e]/60 hover:text-[#1a1a2e] transition-colors w-full text-center font-medium">
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="flex flex-col items-center gap-3 mt-8 w-full border-t border-[#1a1a2e]/10 pt-6">
-          {signupButtonElement}
-          {loginButtonElement}
-        </div>
-      </div>
-    </header>
+      </header>
+    </>
   );
 }

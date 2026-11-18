@@ -68,27 +68,25 @@ export default function TermsOfServicePage() {
   };
 
   return (
-    <main className="bg-white min-h-screen text-[#1a1a2e] font-sans pt-32 pb-24 px-6 md:px-12 max-w-7xl mx-auto w-full relative">
+    <main id="main" className="bg-white text-ink pt-36 pb-28 px-6 md:px-12 max-w-7xl mx-auto w-full relative">
       {/* Background ambient glows */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#0066FF] rounded-full blur-[200px] opacity-[0.03] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#00B2FF] rounded-full blur-[200px] opacity-[0.03] pointer-events-none" />
 
       {/* Hero Header */}
-      <header className="mb-16 border-b border-[#1a1a2e]/10 pb-8">
+      <header className="mb-16 border-b border-ink/10 pb-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0066FF]/5 border border-[#0066FF]/10 text-[#0066FF] text-xs font-semibold uppercase tracking-wider mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-fin/5 border border-fin/10 text-fin text-xs font-semibold uppercase tracking-wider mb-4">
             <FileText className="w-3.5 h-3.5" />
             Terms of Service
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#1a1a2e] tracking-tight leading-none mb-4">
-            Terms & <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0066FF] to-[#00B2FF]">Conditions</span>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-ink tracking-tight leading-none mb-4">
+            Terms & <span className="text-transparent bg-clip-text bg-gradient-to-r from-fin to-fin-cyan">Conditions</span>
           </h1>
-          <p className="text-[#1a1a2e]/50 text-sm md:text-base font-medium flex items-center gap-1.5 mt-2">
-            <Clock className="w-4 h-4 text-[#1a1a2e]/40" />
+          <p className="text-ink/50 text-sm md:text-base font-medium flex items-center gap-1.5 mt-2">
+            <Clock className="w-4 h-4 text-ink/40" />
             Last Updated: May 25, 2026 • Fintness Finserv Pvt. Ltd.
           </p>
         </motion.div>
@@ -98,8 +96,8 @@ export default function TermsOfServicePage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
 
         {/* Sticky Table of Contents Sidebar */}
-        <aside className="hidden lg:block lg:col-span-4 sticky top-32 bg-[#1a1a2e]/[0.02] border border-[#1a1a2e]/5 rounded-2xl p-6">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-[#1a1a2e]/40 mb-4 px-2">Table of Contents</h2>
+        <aside className="hidden lg:block lg:col-span-4 sticky top-32 bg-ink/[0.02] border border-ink/5 rounded-2xl p-6">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-ink/40 mb-4 px-2">Table of Contents</h2>
           <nav className="space-y-1">
             {sections.map((sec) => {
               const Icon = sec.icon;
@@ -109,11 +107,11 @@ export default function TermsOfServicePage() {
                   key={sec.id}
                   onClick={() => scrollToSection(sec.id)}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left text-xs font-semibold tracking-wide transition-all duration-200 group ${isActive
-                      ? "bg-[#0066FF] text-white shadow-md shadow-[#0066FF]/10"
-                      : "text-[#1a1a2e]/60 hover:text-[#1a1a2e] hover:bg-[#1a1a2e]/[0.04]"
+                      ? "bg-fin text-white shadow-md shadow-fin/10"
+                      : "text-ink/60 hover:text-ink hover:bg-ink/[0.04]"
                     }`}
                 >
-                  <Icon className={`w-4 h-4 shrink-0 transition-colors duration-200 ${isActive ? "text-white" : "text-[#1a1a2e]/30 group-hover:text-[#1a1a2e]/60"}`} />
+                  <Icon className={`w-4 h-4 shrink-0 transition-colors duration-200 ${isActive ? "text-white" : "text-ink/30 group-hover:text-ink/60"}`} />
                   <span>{sec.label}</span>
                 </button>
               );
@@ -122,15 +120,15 @@ export default function TermsOfServicePage() {
         </aside>
 
         {/* Core Content */}
-        <article className="lg:col-span-8 space-y-12 text-[#1a1a2e]/85 leading-relaxed text-sm md:text-base font-normal">
+        <article className="lg:col-span-8 space-y-12 text-ink/85 leading-relaxed text-sm md:text-base font-normal">
 
           {/* Section: Introduction */}
           <section id="introduction" className="scroll-mt-32 space-y-4">
-            <div className="flex items-center gap-2.5 text-[#0066FF]">
+            <div className="flex items-center gap-2.5 text-fin">
               <FileText className="w-5 h-5" />
               <h2 className="text-lg md:text-xl font-bold uppercase tracking-wide">1. Introduction</h2>
             </div>
-            <div className="bg-[#0066FF]/[0.02] border-l-4 border-[#0066FF] p-5 rounded-r-xl space-y-3">
+            <div className="bg-fin/[0.02] border-l-4 border-fin p-5 rounded-r-xl space-y-3">
               <p>
                 Welcome to the official website of <strong>Fintness Finserv Pvt. Ltd.</strong> By accessing, browsing, or using this website, you acknowledge that you have read, understood, and agreed to be bound by the following Terms & Conditions. If you do not agree with any part of these terms, you are advised not to use this website.
               </p>
@@ -139,14 +137,14 @@ export default function TermsOfServicePage() {
 
           {/* Section: Company Information */}
           <section id="company-info" className="scroll-mt-32 space-y-4">
-            <div className="flex items-center gap-2.5 text-[#0066FF]">
+            <div className="flex items-center gap-2.5 text-fin">
               <Building2 className="w-5 h-5" />
               <h2 className="text-lg md:text-xl font-bold uppercase tracking-wide">2. Company Information</h2>
             </div>
-            <div className="border border-[#1a1a2e]/10 p-5 rounded-2xl bg-white shadow-[0_4px_15px_rgba(0,0,0,0.01)] max-w-md">
-              <p className="text-xs uppercase tracking-wider text-[#1a1a2e]/40 font-bold mb-1">Registered Entity</p>
-              <p className="font-semibold text-sm text-[#1a1a2e]/90">Nitesh Luthra</p>
-              <p className="text-xs text-[#1a1a2e]/60 mt-1 leading-relaxed">
+            <div className="border border-ink/10 p-5 rounded-2xl bg-white shadow-[0_4px_15px_rgba(0,0,0,0.01)] max-w-md">
+              <p className="text-xs uppercase tracking-wider text-ink/40 font-bold mb-1">Registered Entity</p>
+              <p className="font-semibold text-sm text-ink/90">Nitesh Luthra</p>
+              <p className="text-xs text-ink/60 mt-1 leading-relaxed">
                 House No. 164, Adarsh Nagar,<br />
                 Jaipur, Rajasthan – 302004.
               </p>
@@ -155,21 +153,21 @@ export default function TermsOfServicePage() {
 
           {/* Section: Scope of Services */}
           <section id="services-scope" className="scroll-mt-32 space-y-4">
-            <div className="flex items-center gap-2.5 text-[#0066FF]">
+            <div className="flex items-center gap-2.5 text-fin">
               <Compass className="w-5 h-5" />
               <h2 className="text-lg md:text-xl font-bold uppercase tracking-wide">3. Scope of Services</h2>
             </div>
             <p>
               Nitesh Luthra provides financial distribution and support services related to Mutual Funds, Insurance Planning, Loans Against Securities, Goal Planning, Financial Planning, Tax Planning, and Will & Estate Planning.
             </p>
-            <p className="text-xs font-semibold text-[#1a1a2e]/60 bg-[#1a1a2e]/[0.02] border border-[#1a1a2e]/5 p-4 rounded-xl">
+            <p className="text-xs font-semibold text-ink/60 bg-ink/[0.02] border border-ink/5 p-4 rounded-xl">
               The content and information available on this website are intended solely for general informational and educational purposes and should not be construed as investment, legal, tax, or financial advice unless specifically provided by an authorized representative of the company.
             </p>
           </section>
 
           {/* Section: Mutual Fund & Investment Disclosure */}
           <section id="mutual-fund-disclosures" className="scroll-mt-32 space-y-4">
-            <div className="flex items-center gap-2.5 text-[#0066FF]">
+            <div className="flex items-center gap-2.5 text-fin">
               <Award className="w-5 h-5" />
               <h2 className="text-lg md:text-xl font-bold uppercase tracking-wide">4. Mutual Fund & Investment Disclosure</h2>
             </div>
@@ -186,7 +184,7 @@ export default function TermsOfServicePage() {
 
           {/* Section: Third-Party Platforms & Transaction Processing */}
           <section id="third-party" className="scroll-mt-32 space-y-4">
-            <div className="flex items-center gap-2.5 text-[#0066FF]">
+            <div className="flex items-center gap-2.5 text-fin">
               <ExternalLink className="w-5 h-5" />
               <h2 className="text-lg md:text-xl font-bold uppercase tracking-wide">5. Third-Party Platforms & Transaction Processing</h2>
             </div>
@@ -200,7 +198,7 @@ export default function TermsOfServicePage() {
 
           {/* Section: Client Communication */}
           <section id="client-communication" className="scroll-mt-32 space-y-4">
-            <div className="flex items-center gap-2.5 text-[#0066FF]">
+            <div className="flex items-center gap-2.5 text-fin">
               <MessageSquare className="w-5 h-5" />
               <h2 className="text-lg md:text-xl font-bold uppercase tracking-wide">6. Client Communication</h2>
             </div>
@@ -211,35 +209,35 @@ export default function TermsOfServicePage() {
 
           {/* Section: Accuracy of Information */}
           <section id="accuracy" className="scroll-mt-32 space-y-4">
-            <div className="flex items-center gap-2.5 text-[#0066FF]">
+            <div className="flex items-center gap-2.5 text-fin">
               <FileSpreadsheet className="w-5 h-5" />
               <h2 className="text-lg md:text-xl font-bold uppercase tracking-wide">7. Accuracy of Information</h2>
             </div>
             <p>
               While reasonable efforts are made to ensure the accuracy and reliability of the information available on this website, Nitesh Luthra makes no warranties or representations regarding the completeness, accuracy, suitability, or reliability of any content, calculations, data, or information published on the website.
             </p>
-            <p className="text-xs text-[#1a1a2e]/60 border-l-2 border-[#1a1a2e]/25 pl-3.5">
+            <p className="text-xs text-ink/60 border-l-2 border-ink/25 pl-3.5">
               Users are advised to independently verify information before making any financial or investment decisions.
             </p>
           </section>
 
           {/* Section: Third-Party Links & Intellectual Property Rights */}
           <section id="intellectual-property" className="scroll-mt-32 space-y-4">
-            <div className="flex items-center gap-2.5 text-[#0066FF]">
+            <div className="flex items-center gap-2.5 text-fin">
               <Lock className="w-5 h-5" />
               <h2 className="text-lg md:text-xl font-bold uppercase tracking-wide">8. Intellectual Property Rights</h2>
             </div>
             <p>
               All content available on this website, including but not limited to text, graphics, logos, branding elements, designs, images, and website material, is the intellectual property of Fintness Finserv Pvt. Ltd. and is protected under applicable intellectual property laws.
             </p>
-            <p className="bg-[#1a1a2e]/[0.02] border border-[#1a1a2e]/5 px-4 py-3 rounded-xl text-xs font-semibold text-[#1a1a2e]/60">
+            <p className="bg-ink/[0.02] border border-ink/5 px-4 py-3 rounded-xl text-xs font-semibold text-ink/60">
               ✓ No content from this website may be copied, reproduced, distributed, modified, or used without prior written permission from the company.
             </p>
           </section>
 
           {/* Section: Limitation of Liability */}
           <section id="liability-limit" className="scroll-mt-32 space-y-4">
-            <div className="flex items-center gap-2.5 text-[#0066FF]">
+            <div className="flex items-center gap-2.5 text-fin">
               <ShieldCheck className="w-5 h-5" />
               <h2 className="text-lg md:text-xl font-bold uppercase tracking-wide">9. Limitation of Liability</h2>
             </div>
@@ -250,7 +248,7 @@ export default function TermsOfServicePage() {
 
           {/* Section: Modification of Terms */}
           <section id="modifications" className="scroll-mt-32 space-y-4">
-            <div className="flex items-center gap-2.5 text-[#0066FF]">
+            <div className="flex items-center gap-2.5 text-fin">
               <RefreshCw className="w-5 h-5" />
               <h2 className="text-lg md:text-xl font-bold uppercase tracking-wide">10. Modification of Terms</h2>
             </div>
@@ -260,15 +258,15 @@ export default function TermsOfServicePage() {
           </section>
 
           {/* Section: Governing Law & Jurisdiction */}
-          <section id="governing-law" className="scroll-mt-32 space-y-4 border-t border-[#1a1a2e]/10 pt-8">
-            <div className="flex items-center gap-2.5 text-[#0066FF]">
+          <section id="governing-law" className="scroll-mt-32 space-y-4 border-t border-ink/10 pt-8">
+            <div className="flex items-center gap-2.5 text-fin">
               <Scale className="w-5 h-5" />
               <h2 className="text-lg md:text-xl font-bold uppercase tracking-wide">11. Governing Law & Jurisdiction</h2>
             </div>
             <p>
               These Terms & Conditions shall be governed by and interpreted in accordance with the laws of India. Any disputes arising in connection with the use of this website shall be subject to the exclusive jurisdiction of the courts located in **Jaipur, Rajasthan**.
             </p>
-            <div className="bg-[#1a1a2e]/[0.02] border border-[#1a1a2e]/5 p-5 rounded-2xl text-xs text-[#1a1a2e]/60 leading-relaxed mt-4">
+            <div className="bg-ink/[0.02] border border-ink/5 p-5 rounded-2xl text-xs text-ink/60 leading-relaxed mt-4">
               <strong>Contact Information:</strong> For any queries, concerns, or clarification regarding these Terms & Conditions, users may contact Nitesh Luthra through the official contact details provided on the website.
             </div>
           </section>

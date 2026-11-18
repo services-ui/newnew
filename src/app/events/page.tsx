@@ -1,17 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Calendar, 
-  MapPin, 
-  X, 
-  ChevronLeft, 
-  ChevronRight, 
-  Maximize2 
-} from "lucide-react";
-import { SparklesText } from "@/components/ui/sparkles-text";
-import { FloatingPaths } from "@/components/ui/background-paths";
+import React, { useState, useEffect, useEffectEvent, useRef } from "react";
+import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
+import { Calendar, MapPin, X, ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
+import PerspectiveTunnelHero from "@/components/ui/perspective-tunnel-hero";
 
 interface EventItem {
   id: string;
@@ -93,6 +86,19 @@ const eventsData: EventItem[] = [
   }
 ];
 
+// The photographs that fly through the tunnel — real event photos, captioned with the real event names.
+const TUNNEL_IMAGES = [
+  { src: "/events/bn-group-1.jpeg", title: "BN Group India Summit" },
+  { src: "/events/hornblower-1.jpeg", title: "Hornblower Corporate Session" },
+  { src: "/events/sumit-1.jpeg", title: "Sumit Digital Integration" },
+  { src: "/events/mavericks-1.jpeg", title: "Mavericks" },
+  { src: "/events/sq-fit-1.jpeg", title: "SQ Fit Corporate Wellness" },
+  { src: "/events/atharv-2.jpeg", title: "Atharv Offshore Ahmedabad" },
+  { src: "/events/bn-group-3.jpeg", title: "BN Group India Summit" },
+  { src: "/events/sumit-3.jpeg", title: "Sumit Digital Integration" },
+  { src: "/events/hornblower-2.jpeg", title: "Hornblower Corporate Session" },
+];
+
 export default function EventsPage() {
   const [lightbox, setLightbox] = useState<{
     isOpen: boolean;
@@ -106,7 +112,12 @@ export default function EventsPage() {
     eventName: ""
   });
 
-  const openLightbox = (images: string[], index: number, eventName: string) => {
+  const lastTrigger = useRef<HTMLElement | null>(null);
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
+  const touchStartX = useRef<number | null>(null);
+
+  const openLightbox = (images: string[], index: number, eventName: string, trigger?: HTMLElement) => {
+    lastTrigger.current = trigger ?? null;
     setLightbox({
       isOpen: true,
       images,
@@ -117,6 +128,8 @@ export default function EventsPage() {
 
   const closeLightbox = () => {
     setLightbox((prev) => ({ ...prev, isOpen: false }));
+    // hand focus back to the tile that opened it
+    requestAnimationFrame(() => lastTrigger.current?.focus());
   };
 
   const nextImage = (e?: React.MouseEvent) => {
@@ -136,210 +149,203 @@ export default function EventsPage() {
   };
 
   // Handle keyboard navigation for lightbox
+  const onKeyDown = useEffectEvent((e: KeyboardEvent) => {
+    if (!lightbox.isOpen) return;
+    if (e.key === "Escape") closeLightbox();
+    if (e.key === "ArrowRight") nextImage();
+    if (e.key === "ArrowLeft") prevImage();
+  });
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!lightbox.isOpen) return;
-      if (e.key === "Escape") closeLightbox();
-      if (e.key === "ArrowRight") nextImage();
-      if (e.key === "ArrowLeft") prevImage();
-    };
+    const handler = (e: KeyboardEvent) => onKeyDown(e);
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+  // While open: lock the page behind it, and move focus into the dialog.
+  useEffect(() => {
+    if (!lightbox.isOpen) return;
+    const prev = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = "hidden";
+    closeBtnRef.current?.focus();
+    return () => {
+      document.documentElement.style.overflow = prev;
+    };
   }, [lightbox.isOpen]);
 
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current == null || lightbox.images.length < 2) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(dx) > 60) (dx < 0 ? nextImage : prevImage)();
+  };
+
   return (
-    <main className="bg-white min-h-screen text-[#1a1a2e] font-sans w-full relative overflow-hidden pb-24">
-      {/* BACKGROUND ELEMENTS */}
-      <div className="absolute top-0 -left-1/4 w-[60%] h-[1200px] bg-[#00B2FF]/10 blur-[120px] rounded-full z-0 pointer-events-none" />
-      <div className="absolute top-[30%] -right-1/4 w-[60%] h-[1200px] bg-[#00B2FF]/8 blur-[120px] rounded-full z-0 pointer-events-none" />
-      <div className="absolute bottom-0 -left-1/4 w-[60%] h-[1200px] bg-[#00B2FF]/6 blur-[120px] rounded-full z-0 pointer-events-none" />
+    <main id="main" className="relative w-full bg-white text-ink">
+      {/* HERO — the tunnel; the page's own words sit at its centre */}
+      <PerspectiveTunnelHero images={TUNNEL_IMAGES}>
+        <h1 className="t-display uppercase tracking-[-0.02em]">
+          <span className="grad">OUR EVENTS</span>
+        </h1>
+        <h2 className="mt-5 text-[clamp(1.1rem,2vw,1.6rem)] font-semibold leading-snug tracking-[-0.025em] text-ink/85">
+          Milestones, Moments, and Core Collaborations
+        </h2>
+        <p className="t-lead mt-4 max-w-[30rem]">
+          A visual journey through our workshops, client meets, wellness activities, and corporate celebrations.
+        </p>
+      </PerspectiveTunnelHero>
 
-      {/* BACKGROUND PATHS */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <FloatingPaths position={1} />
-        <FloatingPaths position={-1} />
-      </div>
-
-      {/* HERO SECTION */}
-      <section className="relative pt-36 pb-20 px-6 md:px-12 max-w-7xl mx-auto flex flex-col items-center justify-center text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="space-y-6 max-w-3xl"
-        >
-          <SparklesText 
-            text="OUR EVENTS" 
-            colors={{ first: "#0066FF", second: "#00B2FF" }} 
-            className="text-5xl md:text-7xl font-extrabold tracking-tight mb-4"
-          />
-          <h2 className="text-xl md:text-2xl font-semibold text-[#1a1a2e]/80 tracking-tight leading-relaxed max-w-2xl mx-auto">
-            Milestones, Moments, and Core Collaborations
-          </h2>
-          <p className="text-base md:text-lg text-slate-600 font-light leading-relaxed max-w-xl mx-auto">
-            A visual journey through our workshops, client meets, wellness activities, and corporate celebrations.
-          </p>
-        </motion.div>
-      </section>
-
-      {/* EVENTS IMAGES SECTION */}
-      <section className="px-6 md:px-12 max-w-7xl mx-auto space-y-28 relative z-10">
-        {eventsData.map((event, eventIdx) => (
-          <div 
-            key={event.id}
-            className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start border-t border-slate-100 pt-16"
-          >
-            {/* Event Description (LHS on Desktop) */}
-            <motion.div 
-              initial={{ opacity: 0, x: -40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className="lg:col-span-5 space-y-6"
+      {/* EVENTS */}
+      <section aria-label="Events" className="wrap pb-[clamp(72px,10vw,144px)] pt-[clamp(56px,8vw,112px)]">
+        {eventsData.map((event, eventIdx) => {
+          const n = event.images.length;
+          return (
+            <article
+              key={event.id}
+              className="grid items-start gap-8 border-t border-ink py-12 lg:grid-cols-12 lg:gap-16 lg:py-20"
             >
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-[#0066FF] bg-[#0066FF]/5 uppercase">
-                Event {eventIdx + 1}
-              </span>
-              <h3 className="text-3xl md:text-4xl font-extrabold text-[#1a1a2e] tracking-tight leading-tight">
-                {event.name}
-              </h3>
-              
-              <div className="flex flex-wrap gap-4 text-sm font-semibold text-slate-500">
-                <span className="flex items-center gap-1.5 bg-slate-50 px-3.5 py-1.5 rounded-2xl border border-slate-100">
-                  <Calendar className="w-4 h-4 text-[#0066FF]" />
-                  {event.date}
-                </span>
-                <span className="flex items-center gap-1.5 bg-slate-50 px-3.5 py-1.5 rounded-2xl border border-slate-100">
-                  <MapPin className="w-4 h-4 text-[#00B2FF]" />
-                  {event.location}
-                </span>
+              <div className="lg:col-span-5 lg:sticky lg:top-28" data-rv="up">
+                <p className="eyebrow tnum">Event {eventIdx + 1}</p>
+                <h2 className="t-h2 mt-5">{event.name}</h2>
+
+                <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[0.9rem] font-medium text-ink/65">
+                  <li className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-fin" strokeWidth={1.8} aria-hidden />
+                    {event.date}
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-fin" strokeWidth={1.8} aria-hidden />
+                    {event.location}
+                  </li>
+                </ul>
+
+                <p className="t-body mt-6 max-w-[30rem] !text-[1.05rem]">{event.description}</p>
               </div>
 
-              <p className="text-slate-600 font-light leading-relaxed text-base md:text-lg">
-                {event.description}
-              </p>
-            </motion.div>
-
-            {/* Event Image Gallery Grid (RHS on Desktop) */}
-            <motion.div 
-              initial={{ opacity: 0, x: 40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, ease: "easeOut", delay: 0.15 }}
-              className="lg:col-span-7"
-            >
-              <div className={`grid gap-4 ${
-                event.images.length === 1 
-                  ? "grid-cols-1" 
-                  : event.images.length === 2 
-                    ? "grid-cols-2" 
-                    : event.images.length === 3
-                      ? "grid-cols-1 sm:grid-cols-3"
-                      : "grid-cols-2"
-              }`}>
-                {event.images.map((imgSrc, imgIdx) => (
-                  <motion.div
-                    key={imgSrc}
-                    whileHover={{ scale: 1.02, y: -4 }}
-                    transition={{ duration: 0.3, ease: "easeOut" }}
-                    onClick={() => openLightbox(event.images, imgIdx, event.name)}
-                    className="relative overflow-hidden rounded-3xl border border-slate-100 bg-[#f8fafc] shadow-sm hover:shadow-[0_12px_30px_rgba(0,102,255,0.08)] cursor-pointer group aspect-[4/3]"
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img 
-                      src={imgSrc} 
-                      alt={`${event.name} photo ${imgIdx + 1}`} 
-                      className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
-                      loading="lazy"
-                    />
-                    
-                    {/* Hover Zoom & Icon Overlay */}
-                    <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center backdrop-blur-[2px]">
-                      <motion.div 
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        whileHover={{ scale: 1 }}
-                        animate={{ scale: [0.8, 1], opacity: [0, 1] }}
-                        className="w-12 h-12 rounded-full bg-white text-[#1a1a2e] flex items-center justify-center shadow-lg"
+              <ul className="grid grid-cols-2 gap-3 sm:gap-4 lg:col-span-7">
+                {event.images.map((imgSrc, imgIdx) => {
+                  const wide = n === 1 || (n === 3 && imgIdx === 0);
+                  return (
+                    <li
+                      key={imgSrc}
+                      className={wide ? "col-span-2" : undefined}
+                    >
+                      <button
+                        type="button"
+                        onClick={(e) => openLightbox(event.images, imgIdx, event.name, e.currentTarget)}
+                        aria-label={`Open ${event.name} photo ${imgIdx + 1} of ${n}`}
+                        data-rv="clip"
+                        style={{ ["--d" as string]: `${imgIdx * 90}ms` } as React.CSSProperties}
+                        className={`group relative block w-full overflow-hidden rounded-[var(--r-m)] bg-paper-2 ${
+                          wide ? "aspect-[16/10]" : "aspect-[4/3]"
+                        }`}
                       >
-                        <Maximize2 className="w-5 h-5 text-[#0066FF]" />
-                      </motion.div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
-        ))}
+                        <Image
+                          src={imgSrc}
+                          alt={`${event.name} photo ${imgIdx + 1}`}
+                          fill
+                          sizes={wide ? "(min-width: 1024px) 58vw, 100vw" : "(min-width: 1024px) 29vw, 50vw"}
+                          className="object-cover object-center transition-transform duration-[900ms] ease-[cubic-bezier(0.23,1,0.32,1)] motion-safe:group-hover:scale-[1.035]"
+                        />
+                        <span
+                          aria-hidden
+                          className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-ink opacity-100 shadow-[0_8px_20px_-8px_rgb(11_21_38/0.5)] transition-[opacity,scale] duration-200 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:group-focus-visible:opacity-100"
+                        >
+                          <Maximize2 className="h-4 w-4" strokeWidth={1.8} />
+                        </span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </article>
+          );
+        })}
       </section>
 
       {/* LIGHTBOX MODAL OVERLAY */}
       <AnimatePresence>
         {lightbox.isOpen && (
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${lightbox.eventName} photos`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
             onClick={closeLightbox}
-            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/95 backdrop-blur-md px-4 py-8"
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-ink/95 px-4 py-8 backdrop-blur-md"
           >
             {/* Close button */}
             <button
-              onClick={closeLightbox}
-              className="absolute top-6 right-6 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 flex items-center justify-center text-white transition-all duration-300 hover:scale-105 active:scale-95"
+              ref={closeBtnRef}
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                closeLightbox();
+              }}
+              className="absolute right-4 top-4 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white shadow-[inset_0_0_0_1px_rgb(255_255_255/0.14)] transition-[background-color,scale] duration-150 hover:bg-white/20 active:scale-95 sm:right-6 sm:top-6"
               aria-label="Close lightbox"
             >
-              <X className="w-5 h-5" />
+              <X className="h-5 w-5" aria-hidden />
             </button>
 
             {/* Lightbox content wrapper */}
-            <div className="relative w-full max-w-5xl aspect-[4/3] max-h-[75vh] flex items-center justify-center">
+            <div className="relative flex aspect-[4/3] max-h-[75vh] w-full max-w-5xl items-center justify-center">
               {/* Previous Button */}
               {lightbox.images.length > 1 && (
                 <button
+                  type="button"
                   onClick={prevImage}
-                  className="absolute left-4 z-10 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 flex items-center justify-center text-white transition-all duration-300 hover:scale-105 active:scale-95"
+                  className="absolute left-2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white shadow-[inset_0_0_0_1px_rgb(255_255_255/0.14)] transition-[background-color,scale] duration-150 hover:bg-white/20 active:scale-95 sm:left-4"
                   aria-label="Previous image"
                 >
-                  <ChevronLeft className="w-6 h-6" />
+                  <ChevronLeft className="h-6 w-6" aria-hidden />
                 </button>
               )}
 
               {/* Central Image */}
               <motion.div
                 key={lightbox.images[lightbox.index]}
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.97 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.3 }}
-                className="w-full h-full flex items-center justify-center"
+                exit={{ opacity: 0, scale: 0.97 }}
+                transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
+                className="relative flex h-full w-full items-center justify-center"
                 onClick={(e) => e.stopPropagation()} // Prevent closing when clicking the image
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={lightbox.images[lightbox.index]}
                   alt={`${lightbox.eventName} fullscreen view`}
-                  className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl border border-white/10"
+                  fill
+                  sizes="(min-width: 1024px) 1024px, 100vw"
+                  className="rounded-[var(--r-m)] object-contain shadow-2xl"
                 />
               </motion.div>
 
               {/* Next Button */}
               {lightbox.images.length > 1 && (
                 <button
+                  type="button"
                   onClick={nextImage}
-                  className="absolute right-4 z-10 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 flex items-center justify-center text-white transition-all duration-300 hover:scale-105 active:scale-95"
+                  className="absolute right-2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white shadow-[inset_0_0_0_1px_rgb(255_255_255/0.14)] transition-[background-color,scale] duration-150 hover:bg-white/20 active:scale-95 sm:right-4"
                   aria-label="Next image"
                 >
-                  <ChevronRight className="w-6 h-6" />
+                  <ChevronRight className="h-6 w-6" aria-hidden />
                 </button>
               )}
             </div>
 
             {/* Caption & Counter */}
-            <div className="text-center mt-6 space-y-2">
-              <p className="text-white font-medium text-lg">{lightbox.eventName}</p>
+            <div className="mt-6 space-y-2 text-center">
+              <p className="text-lg font-medium text-white">{lightbox.eventName}</p>
               {lightbox.images.length > 1 && (
-                <p className="text-white/50 text-xs tracking-wider font-semibold uppercase">
+                <p className="tnum text-xs font-semibold uppercase tracking-wider text-white/50" aria-live="polite">
                   Image {lightbox.index + 1} of {lightbox.images.length}
                 </p>
               )}

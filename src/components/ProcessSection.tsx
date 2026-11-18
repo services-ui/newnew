@@ -1,9 +1,5 @@
-"use client";
-
-import { useRef, useEffect, useState } from "react";
-import { SparklesText } from "@/components/ui/sparkles-text";
-import { GradientText } from "@/components/ui/gradient-text";
-import { motion } from "framer-motion";
+import { Check } from "lucide-react";
+import RevealText from "@/components/ui/RevealText";
 
 const PROCESS_PHASES = [
   {
@@ -43,196 +39,98 @@ const PROCESS_PHASES = [
   },
 ];
 
+// Desktop geometry (px): the wave is 120px tall; milestones alternate between two heights along it.
+const UP = 24;
+const DOWN = 96;
+const NODE = 56;
+
+/**
+ * The process as a journey: a winding line that draws itself, five milestones strung along it.
+ * One list for every screen size — a horizontal wave on desktop, a vertical path on phones.
+ * No pinning, no scroll-linked animation: it simply arrives.
+ */
 export default function ProcessSection() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(-1);
-
-  useEffect(() => {
-    let lastActiveIndex = -1;
-
-    const handleScroll = () => {
-      if (!sectionRef.current) return;
-      const rect = sectionRef.current.getBoundingClientRect();
-      
-      const totalMultiplier = 8.0;
-      const viewportHeight = rect.height / totalMultiplier;
-      const totalScrollable = rect.height - viewportHeight;
-      const scrolled = -rect.top;
-      
-      const progress = totalScrollable > 0 ? Math.min(Math.max(scrolled / totalScrollable, 0), 1) : 0;
-
-      let idx = -1;
-      if (rect.top <= 0) {
-        if (progress < 0.2) {
-          idx = 0;
-        } else if (progress < 0.4) {
-          idx = 1;
-        } else if (progress < 0.6) {
-          idx = 2;
-        } else if (progress < 0.8) {
-          idx = 3;
-        } else {
-          idx = 4;
-        }
-      }
-
-      if (idx !== lastActiveIndex) {
-        lastActiveIndex = idx;
-        setActiveIndex(idx);
-      }
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
-    <section
-      id="process"
-      ref={sectionRef}
-      style={{ height: "800vh" }}
-      className="relative w-full"
-    >
-      {/* This is the sticky viewport — it pins to the screen */}
-      <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
-        {/* Light premium background */}
-        <div className="absolute inset-0 bg-white" />
+    <section id="process" className="sec relative overflow-hidden bg-white" aria-labelledby="process-title">
+      <div className="wrap">
+        <div className="mx-auto max-w-[48rem] text-center">
+          <h2 id="process-title">
+            <span className="eyebrow">Our Process</span>
+            <RevealText
+              as="span"
+              className="mt-6 block text-balance text-[clamp(2.2rem,4vw,3.4rem)] font-semibold leading-[1.08] tracking-[-0.032em]"
+              parts={["Planning your ", { t: "financial", className: "grad" }, " journey"]}
+            />
+          </h2>
+          <p className="t-lead mx-auto mt-6 max-w-[36rem] !text-[clamp(1.05rem,1.3vw,1.2rem)]" data-rv="up">
+            We engage in meaningful conversations to grasp your goals and build a foundation for everything that follows.
+          </p>
+        </div>
 
-        {/* Subtle ambient glow */}
-        <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-[#0066FF]/[0.03] rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-[#00B2FF]/[0.03] rounded-full blur-[100px] pointer-events-none" />
+        <div className="relative mt-16 lg:mt-24">
+          {/* desktop: the winding line the milestones sit on */}
+          <svg
+            aria-hidden
+            viewBox="0 0 1000 120"
+            preserveAspectRatio="none"
+            className="pointer-events-none absolute left-0 top-0 hidden h-[120px] w-full overflow-visible lg:block"
+          >
+            <path
+              d={`M0 ${UP} L100 ${UP} C200 ${UP} 200 ${DOWN} 300 ${DOWN} C400 ${DOWN} 400 ${UP} 500 ${UP} C600 ${UP} 600 ${DOWN} 700 ${DOWN} C800 ${DOWN} 800 ${UP} 900 ${UP} L1000 ${UP}`}
+              fill="none"
+              stroke="rgb(0 102 255 / 0.38)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              pathLength={1}
+              vectorEffect="non-scaling-stroke"
+              data-rv="path"
+            />
+          </svg>
 
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 xl:px-12">
-          <div className="grid md:grid-cols-2 gap-8 lg:gap-12 xl:gap-20 items-center">
-            {/* Left — sticky heading area */}
-            <div>
-              <SparklesText 
-                text="Our Process" 
-                colors={{ first: "#0066FF", second: "#00B2FF" }} 
-                className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl tracking-tight mb-4"
-              />
-              <h3 className="text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight leading-[1.1] text-[#1a1a2e]">
-                Planning your{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0066FF] to-[#00B2FF]">
-                  financial
-                </span>{" "}
-                journey
-              </h3>
-              <p className="max-w-md text-base md:text-lg text-[#1a1a2e]/45 leading-relaxed font-light mt-6">
-                We engage in meaningful conversations to grasp your goals and
-                build a foundation for everything that follows.
-              </p>
+          {/* phones: a vertical path */}
+          <span
+            aria-hidden
+            data-rv="vline"
+            className="absolute bottom-10 left-6 top-6 w-0.5 -translate-x-1/2 rounded-full bg-fin/35 lg:hidden"
+          />
 
-              {/* Progress dots */}
-              <div className="flex items-center gap-3 mt-10">
-                {PROCESS_PHASES.map((phase, i) => (
-                  <div
-                    key={phase.id}
-                    className="flex items-center gap-2 transition-all duration-500"
+          <ol className="relative grid lg:grid-cols-5">
+            {PROCESS_PHASES.map((phase, i) => {
+              const down = i % 2 === 1;
+              const last = i === PROCESS_PHASES.length - 1;
+              return (
+                <li
+                  key={phase.id}
+                  data-rv="up"
+                  style={
+                    {
+                      ["--d" as string]: `${300 + i * 150}ms`,
+                      ["--pt" as string]: `${(down ? DOWN : UP) + NODE / 2 + 26}px`,
+                    } as React.CSSProperties
+                  }
+                  className="relative pb-12 pl-[4.5rem] last:pb-0 lg:px-5 lg:pb-0 lg:pl-5 lg:text-center lg:[padding-top:var(--pt)]"
+                >
+                  {/* the milestone */}
+                  <span
+                    aria-hidden
+                    style={{ ["--ny" as string]: `${(down ? DOWN : UP) - NODE / 2}px` } as React.CSSProperties}
+                    className={`tnum absolute left-0 top-0 flex h-12 w-12 items-center justify-center rounded-full font-mono text-[0.95rem] font-semibold shadow-[0_10px_24px_-10px_rgb(0_70_190/0.55)] lg:left-1/2 lg:h-14 lg:w-14 lg:-translate-x-1/2 lg:text-[1.05rem] lg:[top:var(--ny)] ${
+                      last
+                        ? "bg-[image:var(--fin-grad)] text-white"
+                        : "bg-white text-fin shadow-[inset_0_0_0_2px_var(--fin),0_10px_24px_-10px_rgb(0_70_190/0.55)]"
+                    }`}
                   >
-                    <div
-                      className={`rounded-full transition-all duration-500 ${
-                        i <= activeIndex
-                          ? "w-8 h-2 bg-[#0066FF]"
-                          : "w-2 h-2 bg-[#1a1a2e]/15"
-                      }`}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
+                    {last ? <Check className="h-6 w-6" strokeWidth={2.6} /> : phase.num}
+                  </span>
 
-            {/* Right — stacking cards */}
-            <div className="relative h-[450px] sm:h-[400px] md:h-[380px] lg:h-[360px]">
-              {PROCESS_PHASES.map((phase, index) => {
-                const isVisible = index <= activeIndex;
-                const isActive = index === activeIndex;
-                const stackOffset = isVisible
-                  ? (activeIndex - index) * 12
-                  : 0;
-                const scale = isVisible
-                  ? 1 - (activeIndex - index) * 0.03
-                  : 1;
-
-                return (
-                  <motion.div
-                    key={phase.id}
-                    className="absolute inset-0"
-                    initial={{ y: 80, scale: 0.95, opacity: 0 }}
-                    animate={{
-                      y: isVisible ? stackOffset : 100,
-                      scale: isVisible ? scale : 0.95,
-                      opacity: isVisible ? 1 : 0,
-                    }}
-                    transition={{
-                      type: "spring",
-                      stiffness: 100,
-                      damping: 18,
-                      mass: 0.8
-                    }}
-                    style={{
-                      zIndex: isVisible ? PROCESS_PHASES.length - (activeIndex - index) : 0,
-                      pointerEvents: isActive ? "auto" : "none",
-                    }}
-                  >
-                    <div
-                      className={`
-                        h-full rounded-3xl p-8 md:p-10 relative border backdrop-blur-xl
-                        transition-all duration-300
-                        ${isActive
-                          ? "bg-white/90 border-[#0066FF]/20 shadow-[0_8px_40px_rgba(0,102,255,0.12)]"
-                          : "bg-white/60 border-[#1a1a2e]/[0.06] shadow-[0_4px_20px_rgba(0,0,0,0.03)]"
-                        }
-                      `}
-                    >
-                      {/* Card content */}
-                      <div className="relative z-10 flex flex-col justify-between h-full">
-                        <div>
-                          <div className="flex items-start justify-between gap-4 mb-4 md:mb-6">
-                            <span
-                              className={`text-6xl md:text-8xl font-black leading-none transition-colors duration-500 ${
-                                isActive
-                                  ? "text-[#0066FF]/[0.60]"
-                                  : "text-[#1a1a2e]/[0.12]"
-                              }`}
-                            >
-                              {phase.num}
-                            </span>
-                          </div>
-                          <h3
-                            className={`text-2xl md:text-3xl font-bold tracking-tight mb-3 md:mb-4 transition-colors duration-500 ${
-                              isActive ? "text-[#1a1a2e]" : "text-[#1a1a2e]/60"
-                            }`}
-                          >
-                            {phase.title}
-                          </h3>
-                          <p
-                            className={`text-base md:text-lg leading-relaxed font-light transition-colors duration-500 ${
-                              isActive ? "text-[#1a1a2e]/65" : "text-[#1a1a2e]/35"
-                            }`}
-                          >
-                            {phase.description}
-                          </p>
-                        </div>
-
-                        {/* Bottom accent line */}
-                        <div className="mt-6 md:mt-8">
-                          <div className="h-[2px] w-full bg-[#1a1a2e]/[0.04] rounded-full overflow-hidden">
-                            <div
-                              className="h-full bg-gradient-to-r from-[#0066FF] to-[#00B2FF] rounded-full transition-all duration-500 ease-out"
-                              style={{
-                                width: isActive ? "100%" : "0%",
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </div>
+                  <h3 className="text-[1.35rem] font-semibold leading-snug tracking-[-0.025em] text-ink lg:text-[1.4rem]">
+                    {phase.title}
+                  </h3>
+                  <p className="mt-3 text-[1.02rem] leading-[1.65] text-ink/65 lg:mx-auto lg:max-w-[17rem]">{phase.description}</p>
+                </li>
+              );
+            })}
+          </ol>
         </div>
       </div>
     </section>

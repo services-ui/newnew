@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { motion, useInView, useMotionValue, useTransform, animate } from "framer-motion";
+import { useRef } from "react";
+import { gsap, ScrollTrigger, MQ, useGSAP } from "@/lib/gsap";
 
 interface StatItemProps {
   endValue: number;
@@ -11,72 +11,90 @@ interface StatItemProps {
   isAccent?: boolean;
 }
 
-const StatItem = ({ endValue, suffix = "", title, subtitle, isAccent = false }: StatItemProps) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
-  
-  const count = useMotionValue(0);
-  const rounded = useTransform(count, Math.round);
+const STATS: StatItemProps[] = [
+  { endValue: 14, suffix: "+", title: "Years", subtitle: "Proven Expertise" },
+  { endValue: 200, suffix: "+ Cr", title: "AUM", subtitle: "Assets Managed" },
+  { endValue: 400, suffix: "+", title: "Families", subtitle: "Trusted Partners" },
+  { endValue: 98, suffix: "%", title: "Success", subtitle: "Claim Settlement", isAccent: true },
+];
 
-  useEffect(() => {
-    if (isInView) {
-      // Use framer-motion's highly optimized animate function
-      const controls = animate(count, endValue, { 
-        duration: 2.5, // 2.5 seconds for all
-        ease: "easeOut" 
-      });
-      return controls.stop;
-    }
-  }, [isInView, endValue, count]);
-
-  return (
-    <div ref={ref} className="flex flex-col items-center justify-center text-center p-6 w-full">
-      <h3 className={`text-3xl md:text-4xl font-bold mb-2 tracking-tight flex items-center justify-center ${isAccent ? 'text-[#00B2FF]' : 'text-[#1a1a2e]'}`}>
-        <motion.span>{rounded}</motion.span>
-        <span>{suffix}</span>
-      </h3>
-      <p className="text-base md:text-lg font-medium text-[#1a1a2e]/80 mb-1">{title}</p>
-      <p className="text-xs md:text-sm text-[#1a1a2e]/50 font-light">{subtitle}</p>
-    </div>
-  );
-};
-
+/**
+ * The ledger plate that overlaps the hero. Numbers are real text in the HTML (final values,
+ * no-JS safe); with JS they count up once when the plate enters view. Tabular figures so the
+ * digits never jitter while counting.
+ */
 export default function StatsBanner() {
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      const nums = gsap.utils.toArray<HTMLElement>("[data-count]", rootRef.current);
+      const mm = gsap.matchMedia();
+
+      mm.add(MQ.motionOk, () => {
+        nums.forEach((el) => {
+          const end = Number(el.dataset.count);
+          const out = el.querySelector<HTMLElement>("[data-count-n]");
+          if (!out) return;
+          const o = { v: 0 };
+          out.textContent = "0";
+          el.setAttribute("data-counted", "");
+          ScrollTrigger.create({
+            trigger: rootRef.current,
+            start: "top 92%",
+            once: true,
+            onEnter: () =>
+              gsap.to(o, {
+                v: end,
+                duration: 1.9,
+                ease: "power3.out",
+                onUpdate: () => {
+                  out.textContent = String(Math.round(o.v));
+                },
+                onComplete: () => {
+                  out.textContent = String(end);
+                },
+              }),
+          });
+        });
+      });
+      mm.add(MQ.reduce, () => {
+        nums.forEach((el) => el.setAttribute("data-counted", ""));
+      });
+
+      return () => mm.revert();
+    },
+    { scope: rootRef },
+  );
+
   return (
-    <div className="w-full px-6 py-12 relative z-20 bg-white">
-      <div className="max-w-6xl mx-auto bg-white rounded-3xl shadow-[0_8px_40px_rgba(0,0,0,0.06)] border border-[#1a1a2e]/[0.04] p-4 md:p-8 backdrop-blur-xl">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-0 divide-x-0 md:divide-x divide-y md:divide-y-0 divide-[#1a1a2e]/10">
-          
-          <StatItem 
-            endValue={14} 
-            suffix="+" 
-            title="Years" 
-            subtitle="Proven Expertise" 
-          />
-          
-          <StatItem 
-            endValue={200} 
-            suffix="+ Cr" 
-            title="AUM" 
-            subtitle="Assets Managed" 
-          />
-          
-          <StatItem 
-            endValue={400} 
-            suffix="+" 
-            title="Families" 
-            subtitle="Trusted Partners" 
-          />
-          
-          <StatItem 
-            endValue={98} 
-            suffix="%" 
-            title="Success" 
-            subtitle="Claim Settlement" 
-            isAccent={true}
-          />
-          
-        </div>
+    <div ref={rootRef} className="relative z-20 -mt-[var(--hero-lap,7rem)] pb-2">
+      <div className="wrap">
+        <ul
+          className="grid grid-cols-2 rounded-[var(--r-l)] bg-white shadow-[var(--shadow-card)] md:grid-cols-4"
+          data-rv="up"
+        >
+          {STATS.map((s, i) => (
+            <li
+              key={s.title}
+              className={`px-5 py-6 sm:px-8 sm:py-7 ${i % 2 === 1 ? "border-l border-hair" : ""} ${
+                i >= 2 ? "border-t border-hair md:border-t-0" : ""
+              } ${i > 0 ? "md:border-l md:border-hair" : "md:border-l-0"}`}
+            >
+              <span
+                data-count={s.endValue}
+                className={`tnum flex items-baseline text-[clamp(1.9rem,3vw,2.6rem)] font-semibold leading-none tracking-[-0.035em] ${
+                  s.isAccent ? "grad" : "text-ink"
+                }`}
+              >
+                <span data-count-n>{s.endValue}</span>
+                <span className="ml-0.5 text-[0.55em] tracking-[-0.03em]">{s.suffix}</span>
+              </span>
+              <p className="mt-3 text-[0.92rem] font-semibold tracking-[-0.01em] text-ink">{s.title}</p>
+              <p className="mt-0.5 text-[0.8rem] leading-snug text-ink/50">{s.subtitle}</p>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );

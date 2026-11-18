@@ -1,214 +1,157 @@
-import * as React from "react"
-import { motion, PanInfo } from "framer-motion"
-import { cn } from "@/lib/utils"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+"use client";
+
+import * as React from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export interface Testimonial {
-  id: number | string
-  name: string
-  avatar?: string
-  role?: string
-  description: string
+  id: number | string;
+  name: string;
+  avatar?: string;
+  role?: string;
+  description: string;
 }
 
-export interface TestimonialCarouselProps
-  extends React.HTMLAttributes<HTMLDivElement> {
-  testimonials: Testimonial[]
-  showArrows?: boolean
-  showDots?: boolean
+export interface TestimonialCarouselProps extends React.HTMLAttributes<HTMLDivElement> {
+  testimonials: Testimonial[];
+  showArrows?: boolean;
+  showDots?: boolean;
 }
 
-const getInitials = (name: string) => {
-  return name
+const getInitials = (name: string) =>
+  name
     .split(" ")
     .map((n) => n[0])
     .slice(0, 2)
     .join("")
     .toUpperCase();
-};
 
-const getGradient = (index: number) => {
-  const gradients = [
-    "from-[#0066FF] to-[#00B2FF]", // Blue-Cyan
-    "from-[#7C3AED] to-[#C084FC]", // Purple-Lavender
-    "from-[#059669] to-[#34D399]", // Emerald-Mint
-  ];
-  return gradients[index % gradients.length];
-};
+/**
+ * Native scroll-snap track: the browser's own physics, 1:1 finger tracking, interruptible by default,
+ * keyboard-reachable. Three columns on desktop (everything visible, nothing auto-rotating), one and a
+ * bit per screen on phones with prev/next controls. No timer moves the content under the reader.
+ */
+export const TestimonialCarousel = React.forwardRef<HTMLDivElement, TestimonialCarouselProps>(
+  ({ className, testimonials, showArrows = true, showDots = true, ...props }, ref) => {
+    const trackRef = React.useRef<HTMLUListElement>(null);
+    const [index, setIndex] = React.useState(0);
 
-export const TestimonialCarousel = React.forwardRef<
-  HTMLDivElement,
-  TestimonialCarouselProps
->(
-  (
-    { className, testimonials, showArrows = true, showDots = true, ...props },
-    ref,
-  ) => {
-    const [currentIndex, setCurrentIndex] = React.useState(0)
-    const [exitX, setExitX] = React.useState<number>(0)
-    const [slideDirection, setSlideDirection] = React.useState<number>(1)
+    const scrollToIndex = (i: number) => {
+      const track = trackRef.current;
+      if (!track) return;
+      const clamped = Math.max(0, Math.min(testimonials.length - 1, i));
+      const card = track.children[clamped] as HTMLElement | undefined;
+      card?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", inline: "start", block: "nearest" });
+    };
 
-    // Auto-play with alternating left/right animations
+    // track which card is current from the scroll position (no per-frame React state: only when the index changes)
     React.useEffect(() => {
-      const interval = setInterval(() => {
-        setSlideDirection((prev) => {
-          const newDirection = prev === 1 ? -1 : 1
-          setExitX(200 * newDirection)
-          setTimeout(() => {
-            setCurrentIndex((curr) => (curr + 1) % testimonials.length)
-            setExitX(0)
-          }, 200)
-          return newDirection
-        })
-      }, 5000) // Slightly longer auto-play since text is longer
-
-      return () => clearInterval(interval)
-    }, [testimonials.length])
-
-    const handleDragEnd = (
-      event: MouseEvent | TouchEvent | PointerEvent,
-      info: PanInfo,
-    ) => {
-      if (Math.abs(info.offset.x) > 100) {
-        setExitX(info.offset.x)
-        setTimeout(() => {
-          setCurrentIndex((prev) => (prev + 1) % testimonials.length)
-          setExitX(0)
-        }, 200)
-      }
-    }
-
-    const nextTestimonial = () => {
-      setExitX(200)
-      setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % testimonials.length)
-        setExitX(0)
-      }, 200)
-    }
-
-    const prevTestimonial = () => {
-      setExitX(-200)
-      setTimeout(() => {
-        setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length)
-        setExitX(0)
-      }, 200)
-    }
+      const track = trackRef.current;
+      if (!track) return;
+      let raf = 0;
+      const onScroll = () => {
+        if (raf) return;
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          const first = track.children[0] as HTMLElement | undefined;
+          if (!first) return;
+          const step = (track.children[1] as HTMLElement | undefined)?.offsetLeft ?? first.offsetWidth;
+          const i = Math.round(track.scrollLeft / Math.max(1, step - first.offsetLeft));
+          setIndex((prev) => (prev === i ? prev : i));
+        });
+      };
+      track.addEventListener("scroll", onScroll, { passive: true });
+      return () => {
+        track.removeEventListener("scroll", onScroll);
+        if (raf) cancelAnimationFrame(raf);
+      };
+    }, []);
 
     return (
-      <div
-        ref={ref}
-        className={cn(
-          "h-[480px] sm:h-[430px] md:h-[380px] w-full flex items-center justify-center relative",
-          className
-        )}
-        {...props}
-      >
-        {showArrows && (
-          <button 
-            onClick={prevTestimonial}
-            className="absolute left-1 sm:left-4 md:left-8 lg:left-12 z-20 p-2 sm:p-2.5 rounded-full bg-white/95 backdrop-blur-sm hover:bg-slate-50 border border-slate-200 text-slate-600 hover:text-[#0066FF] shadow-sm transition-all hover:scale-105 active:scale-95 flex items-center justify-center"
-            aria-label="Previous testimonial"
-          >
-            <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
-          </button>
-        )}
-        
-        <div className="relative w-[265px] min-[375px]:w-[310px] sm:w-[420px] md:w-[600px] h-[395px] sm:h-[350px] md:h-[320px]">
-          {testimonials.map((testimonial, index) => {
-            const isCurrentCard = index === currentIndex
-
-            if (!isCurrentCard) return null
-
-            return (
-              <motion.div
-                key={testimonial.id}
-                className={cn(
-                  "absolute w-full h-full rounded-3xl border border-slate-100",
-                  "bg-white shadow-[0_15px_40px_rgba(0,102,255,0.06)]",
-                )}
-                style={{
-                  zIndex: 3,
-                }}
-                drag="x"
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.7}
-                onDragEnd={handleDragEnd}
-                initial={{
-                  scale: 0.95,
-                  opacity: 0,
-                  x: slideDirection * 50
-                }}
-                animate={{
-                  scale: 1,
-                  opacity: 1,
-                  x: exitX
-                }}
-                transition={{
-                  type: "spring",
-                  stiffness: 200,
-                  damping: 25,
-                }}
-              >
-                <div className="p-6 sm:p-8 flex flex-col items-center text-center h-full justify-between relative">
-                  {/* Initials Avatar */}
-                  <div className={cn(
-                    "w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-white text-lg sm:text-xl font-bold shadow-md bg-gradient-to-br shrink-0 mt-2",
-                    getGradient(index)
-                  )}>
-                    {getInitials(testimonial.name)}
-                  </div>
-                  
-                  {/* Description */}
-                  <div className="flex-1 flex items-center justify-center my-3 max-w-[240px] sm:max-w-md md:max-w-xl">
-                    <p className="text-xs sm:text-sm md:text-[15px] text-slate-700 font-normal leading-relaxed italic">
-                      &quot;{testimonial.description}&quot;
-                    </p>
-                  </div>
-
-                  {/* Name and Designation */}
-                  <div className="mt-1 pb-2">
-                    <h3 className="text-base sm:text-lg font-bold text-[#1a1a2e]">
-                      {testimonial.name}
-                    </h3>
-                    {testimonial.role && (
-                      <p className="text-[11px] sm:text-xs text-slate-500 font-medium mt-0.5 max-w-[220px] sm:max-w-md mx-auto">
-                        {testimonial.role}
-                      </p>
-                    )}
-                  </div>
+      <div ref={ref} className={cn("relative w-full", className)} {...props}>
+        <ul
+          ref={trackRef}
+          role="list"
+          aria-label="Client testimonials"
+          tabIndex={0}
+          className="-mx-[var(--gutter)] flex snap-x snap-mandatory gap-5 overflow-x-auto px-[var(--gutter)] pb-2 [scrollbar-width:none] [touch-action:pan-x_pan-y] focus-visible:outline-offset-[-2px] lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-6 lg:overflow-visible lg:px-0 [&::-webkit-scrollbar]:hidden"
+        >
+          {testimonials.map((t, i) => (
+            <li
+              key={t.id}
+              data-rv="up"
+              style={{ ["--d" as string]: `${i * 90}ms` } as React.CSSProperties}
+              className="flex w-[86%] shrink-0 snap-start flex-col justify-between rounded-[var(--r-l)] bg-white p-7 shadow-[var(--shadow-card)] sm:w-[62%] md:w-[48%] lg:w-auto lg:p-9"
+            >
+              <figure className="flex flex-1 flex-col justify-between">
+                <div>
+                  <span aria-hidden className="serif block text-[3rem] leading-[0.7] text-fin/80">
+                    &ldquo;
+                  </span>
+                  <blockquote className="serif mt-1 text-[1.05rem] leading-[1.6] text-ink sm:text-[1.1rem]">
+                    <p>{t.description}</p>
+                  </blockquote>
                 </div>
-              </motion.div>
-            )
-          })}
-          
-          {showDots && (
-            <div className="absolute -bottom-10 left-0 right-0 flex justify-center gap-2">
-              {testimonials.map((_, index) => (
-                <div
-                  key={index}
-                  className={cn(
-                    "h-2 rounded-full transition-all duration-300",
-                    index === currentIndex
-                      ? "w-6 bg-[#0066FF]"
-                      : "w-2 bg-slate-300",
-                  )}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+                <figcaption className="mt-9 flex items-center gap-4 border-t border-hair pt-6">
+                  <span
+                    aria-hidden
+                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-ink font-mono text-[0.8rem] font-medium tracking-wider text-white"
+                  >
+                    {getInitials(t.name)}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-[1rem] font-semibold tracking-[-0.015em] text-ink">{t.name}</span>
+                    {t.role && <span className="mt-0.5 block text-[0.8rem] leading-snug text-ink/55">{t.role}</span>}
+                  </span>
+                </figcaption>
+              </figure>
+            </li>
+          ))}
+        </ul>
 
-        {showArrows && (
-          <button 
-            onClick={nextTestimonial}
-            className="absolute right-1 sm:right-4 md:right-8 lg:right-12 z-20 p-2 sm:p-2.5 rounded-full bg-white/95 backdrop-blur-sm hover:bg-slate-50 border border-slate-200 text-slate-600 hover:text-[#0066FF] shadow-sm transition-all hover:scale-105 active:scale-95 flex items-center justify-center"
-            aria-label="Next testimonial"
-          >
-            <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
-          </button>
+        {(showArrows || showDots) && (
+          <div className="mt-8 flex items-center justify-between lg:hidden">
+            {showDots ? (
+              <div className="flex gap-2" aria-hidden>
+                {testimonials.map((t, i) => (
+                  <span
+                    key={t.id}
+                    className={cn(
+                      "h-1.5 rounded-full transition-[width,background-color] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]",
+                      i === index ? "w-7 bg-fin" : "w-1.5 bg-ink/20",
+                    )}
+                  />
+                ))}
+              </div>
+            ) : (
+              <span />
+            )}
+            {showArrows && (
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => scrollToIndex(index - 1)}
+                  disabled={index === 0}
+                  aria-label="Previous testimonial"
+                  className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-ink shadow-[inset_0_0_0_1px_var(--hair-strong)] transition-[scale,opacity] duration-150 active:scale-95 disabled:opacity-35"
+                >
+                  <ChevronLeft className="h-5 w-5" aria-hidden />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => scrollToIndex(index + 1)}
+                  disabled={index === testimonials.length - 1}
+                  aria-label="Next testimonial"
+                  className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-ink shadow-[inset_0_0_0_1px_var(--hair-strong)] transition-[scale,opacity] duration-150 active:scale-95 disabled:opacity-35"
+                >
+                  <ChevronRight className="h-5 w-5" aria-hidden />
+                </button>
+              </div>
+            )}
+          </div>
         )}
       </div>
-    )
+    );
   },
-)
-TestimonialCarousel.displayName = "TestimonialCarousel"
+);
+TestimonialCarousel.displayName = "TestimonialCarousel";

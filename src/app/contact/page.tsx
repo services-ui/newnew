@@ -1,8 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
-import { Phone, Mail, Clock, Building2, ShieldCheck, MapPin, ChevronDown, CheckCircle2, Check } from "lucide-react";
+import { Phone, Mail, Clock, MapPin, ChevronDown, CheckCircle2, Check, ArrowUpRight } from "lucide-react";
+import RevealText from "@/components/ui/RevealText";
 
 const SUBJECTS = [
   "Wealth Creation",
@@ -107,292 +107,255 @@ ${formData.message}
   };
 
   return (
-    <main className="bg-white min-h-screen text-[#1a1a2e] font-sans pt-32 pb-24 px-6 md:px-12 max-w-7xl mx-auto w-full relative">
-      {/* Background ambient glows */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#0066FF] rounded-full blur-[200px] opacity-[0.03] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#00B2FF] rounded-full blur-[200px] opacity-[0.03] pointer-events-none" />
-
-      {/* Hero Section */}
-      <header className="mb-20 max-w-3xl">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#1a1a2e] tracking-tight leading-[1.1] mb-6">
-            Connected Precision. <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0066FF] to-[#00B2FF]">
-              Let&apos;s architecturalize
-            </span>{" "}
-            your future.
-          </h1>
-          <p className="text-[#1a1a2e]/60 text-lg md:text-xl font-light leading-relaxed max-w-2xl">
+    <main id="main" className="bg-white pt-[8rem] text-ink md:pt-40">
+      {/* heading */}
+      <header className="wrap">
+        <div className="max-w-[58rem]">
+          <RevealText
+            as="h1"
+            on="load"
+            delay={100}
+            className="t-display"
+            parts={["Connected Precision. ", { t: "Let's architecturalize", className: "grad" }, " your future."]}
+          />
+          <p className="t-lead mt-8 max-w-[38rem]" data-rv-load-up style={{ ["--d" as string]: "650ms" } as React.CSSProperties}>
             Our global advisors are ready to translate your financial goals into structural realities. Reach out through our secure channels or visit our Jaipur office.
           </p>
-        </motion.div>
+        </div>
       </header>
 
-      {/* Bento Grid Layout for Contact Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Contact Form Card */}
-        <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
-          className="lg:col-span-7 bg-[#141C2B] border border-white/[0.05] rounded-3xl p-8 lg:p-12 shadow-2xl text-white"
-        >
-          <h2 className="text-2xl font-bold text-white mb-8 tracking-tight">Contact Us</h2>
-          
-          {submitted ? (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="bg-[#22C55E]/5 border border-[#22C55E]/20 text-[#22C55E] p-8 rounded-2xl text-center space-y-3"
-            >
-              <CheckCircle2 className="w-12 h-12 mx-auto" />
-              <h3 className="text-xl font-bold">Inquiry Dispatched!</h3>
-              <p className="text-sm text-[#22C55E]/80">Our financial architects will contact you shortly.</p>
-            </motion.div>
-          ) : (
-            <form className="space-y-6" onSubmit={handleSubmit}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-white/50 ml-1">Full Name</label>
-                  <input
-                    required
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3.5 rounded-xl bg-[#1F2937]/50 border border-transparent text-white placeholder-white/30 focus:outline-none focus:border-white/10 focus:bg-white/10 transition-all duration-300 text-sm font-medium"
-                    placeholder="John Doe"
-                    type="text"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-white/50 ml-1">Email</label>
-                  <input
-                    required
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-3.5 rounded-xl bg-[#1F2937]/50 border border-transparent text-white placeholder-white/30 focus:outline-none focus:border-white/10 focus:bg-white/10 transition-all duration-300 text-sm font-medium"
-                    placeholder="john@company.com"
-                    type="email"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-white/50 ml-1">Mobile Number</label>
-                  <input
-                    required
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-4 py-3.5 rounded-xl bg-[#1F2937]/50 border border-transparent text-white placeholder-white/30 focus:outline-none focus:border-white/10 focus:bg-white/10 transition-all duration-300 text-sm font-medium"
-                    placeholder="+91 98765 43210"
-                    type="tel"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-white/50 ml-1">Subject of Inquiry</label>
-                  <div className="relative" ref={subjectRef}>
-                    <button
-                      type="button"
-                      aria-haspopup="listbox"
-                      aria-expanded={subjectOpen}
-                      onClick={() => setSubjectOpen((o) => !o)}
-                      className="w-full px-4 py-3.5 pr-11 rounded-xl bg-[#1F2937]/50 border border-transparent text-white focus:outline-none focus:border-white/10 focus:bg-white/10 transition-all duration-300 text-sm font-medium text-left cursor-pointer min-h-[50px]"
-                    >
-                      {formData.subject.length ? (
-                        <span className="flex flex-wrap gap-1.5">
-                          {formData.subject.map((x) => (
-                            <span key={x} className="px-2.5 py-0.5 rounded-full bg-[#0066FF]/25 text-white text-xs">{x}</span>
-                          ))}
-                        </span>
-                      ) : (
-                        <span className="text-white/30">Select one or more</span>
-                      )}
-                    </button>
-                    <ChevronDown className={`absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 pointer-events-none transition-transform ${subjectOpen ? "rotate-180" : ""}`} />
-                    {subjectOpen && (
-                      <ul role="listbox" aria-multiselectable="true" className="absolute z-30 mt-2 w-full rounded-xl bg-[#141C2B] border border-white/10 shadow-xl py-1.5 max-h-72 overflow-auto">
-                        {SUBJECTS.map((name) => {
-                          const on = formData.subject.includes(name);
-                          return (
-                            <li key={name} role="option" aria-selected={on}>
-                              <button type="button" onClick={() => toggleSubject(name)} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-white/90 hover:bg-white/5 text-left">
-                                <span className={`w-4 h-4 rounded border flex items-center justify-center ${on ? "bg-[#0066FF] border-[#0066FF]" : "border-white/30"}`}>
-                                  {on && <Check className="w-3 h-3 text-white" />}
-                                </span>
-                                {name}
-                              </button>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs font-semibold uppercase tracking-wider text-white/50 ml-1">Detailed Message</label>
-                <textarea
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  className="w-full px-4 py-3.5 rounded-xl bg-[#1F2937]/50 border border-transparent text-white placeholder-white/30 focus:outline-none focus:border-white/10 focus:bg-white/10 transition-all duration-300 text-sm font-medium resize-none min-h-[120px]"
-                  placeholder="How can our financial architects assist you today?"
-                  rows={5}
-                />
-              </div>
-
-              <div className="flex items-start space-x-3 mb-4">
-                <input
-                  required
-                  id="agree-checkbox"
-                  checked={formData.agree}
-                  onChange={(e) => setFormData({ ...formData, agree: e.target.checked })}
-                  className="mt-1 rounded border-white/20 bg-[#1F2937]/50 text-[#0066FF] focus:ring-[#0066FF] cursor-pointer"
-                  type="checkbox"
-                />
-                <label htmlFor="agree-checkbox" className="text-sm text-white/60 cursor-pointer select-none">
-                  I agree to the <a className="text-[#00B2FF] font-semibold hover:underline" href="/privacy-policy">Privacy Policy</a> regarding data handling.
-                </label>
-              </div>
-
-              {submitError && (
-                <p className="text-red-500 text-sm font-semibold">{submitError}</p>
-              )}
-
-              <button
-                disabled={isSubmitting}
-                className="w-full md:w-auto px-10 py-4 bg-gradient-to-r from-[#0066FF] to-[#00B2FF] text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:shadow-[#0066FF]/20 active:scale-95 hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                type="submit"
-              >
-                {isSubmitting ? "Sending..." : "Submit"}
-              </button>
-            </form>
-          )}
-        </motion.div>
-
-        {/* Side Information Column */}
-        <div className="lg:col-span-5 space-y-8">
-          {/* Communication Channels */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            className="bg-[#0066FF]/5 border border-[#0066FF]/10 rounded-3xl p-8 space-y-8"
-          >
-            <div className="flex items-start space-x-4">
-              <div className="bg-white border border-[#1a1a2e]/5 p-3.5 rounded-2xl shadow-sm text-[#0066FF] shrink-0">
-                <Phone className="w-6 h-6" strokeWidth={2} />
-              </div>
+      <div className="wrap mt-16 grid items-start gap-14 pb-[clamp(72px,9vw,128px)] lg:mt-24 lg:grid-cols-12 lg:gap-16">
+        {/* channels */}
+        <div className="lg:col-span-5 lg:order-1">
+          <ul className="border-t border-ink" data-rv="up">
+            <li className="flex items-start gap-5 border-b border-hair py-7">
+              <span aria-hidden className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-fin/10 text-fin">
+                <Phone className="h-[18px] w-[18px]" strokeWidth={1.8} />
+              </span>
               <div>
-                <p className="text-xs font-bold uppercase tracking-widest text-[#1a1a2e]/40 mb-1">Direct Line</p>
-                <a href="tel:+917852048886" className="text-xl font-bold text-[#1a1a2e] hover:text-[#0066FF] transition-colors">
+                <p className="t-label text-ink/50">Direct Line</p>
+                <a href="tel:+917852048886" className="ulink mt-2 inline-block text-[1.5rem] font-semibold tracking-[-0.03em] text-ink transition-colors hover:text-fin">
                   +91 78520 48886
                 </a>
               </div>
-            </div>
-
-            <div className="flex items-start space-x-4">
-              <div className="bg-white border border-[#1a1a2e]/5 p-3.5 rounded-2xl shadow-sm text-[#0066FF] shrink-0">
-                <Mail className="w-6 h-6" strokeWidth={2} />
-              </div>
+            </li>
+            <li className="flex items-start gap-5 border-b border-hair py-7">
+              <span aria-hidden className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-fin/10 text-fin">
+                <Mail className="h-[18px] w-[18px]" strokeWidth={1.8} />
+              </span>
               <div>
-                <p className="text-xs font-bold uppercase tracking-widest text-[#1a1a2e]/40 mb-1">Digital Ledger</p>
-                <p className="text-xl font-bold text-[#1a1a2e]">mail@fintness.in</p>
+                <p className="t-label text-ink/50">Digital Ledger</p>
+                <a href="mailto:mail@fintness.in" className="ulink mt-2 inline-block text-[1.5rem] font-semibold tracking-[-0.03em] text-ink transition-colors hover:text-fin">
+                  mail@fintness.in
+                </a>
               </div>
-            </div>
-
-            <div className="flex items-start space-x-4">
-              <div className="bg-white border border-[#1a1a2e]/5 p-3.5 rounded-2xl shadow-sm text-[#0066FF] shrink-0">
-                <Clock className="w-6 h-6" strokeWidth={2} />
-              </div>
+            </li>
+            <li className="flex items-start gap-5 border-b border-hair py-7">
+              <span aria-hidden className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-fin/10 text-fin">
+                <Clock className="h-[18px] w-[18px]" strokeWidth={1.8} />
+              </span>
               <div>
-                <p className="text-xs font-bold uppercase tracking-widest text-[#1a1a2e]/40 mb-1">Office Hours</p>
-                <p className="text-[#1a1a2e] font-semibold">Mon — Fri: 10:00 - 18:00 IST</p>
-                <p className="text-[#1a1a2e]/50 text-xs mt-0.5 italic">Saturday by prior appointment only.</p>
+                <p className="t-label text-ink/50">Office Hours</p>
+                <p className="mt-2 text-[1.05rem] font-semibold tracking-[-0.015em] text-ink">Mon — Fri: 10:00 - 18:00 IST</p>
+                <p className="mt-1 text-[0.85rem] italic text-ink/50">Saturday by prior appointment only.</p>
               </div>
-            </div>
-          </motion.div>
+            </li>
+          </ul>
 
-          {/* HQ Address Card */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-            className="bg-[#141C2B] border border-white/[0.05] text-white rounded-3xl p-8 relative overflow-hidden shadow-2xl"
-          >
-            <div className="absolute top-0 right-0 p-8 opacity-5 text-white pointer-events-none">
-              <Building2 className="w-[120px] h-[120px]" />
-            </div>
-            
-            <h3 className="text-xs font-bold uppercase tracking-widest text-[#00B2FF] mb-4">Office</h3>
-            <address className="not-italic text-lg font-bold mb-0 leading-relaxed max-w-[280px]">
+          <div className="bg-night on-dark grain relative mt-10 overflow-hidden rounded-[var(--r-l)] p-8" data-rv="up">
+            <h2 className="eyebrow">Office</h2>
+            <address className="mt-5 text-[1.2rem] font-semibold not-italic leading-[1.45] tracking-[-0.02em]">
               164, Frontier Colony, <br />
               Adarsh Nagar, <br />
               Jaipur, Rajasthan – 302004
             </address>
-          </motion.div>
+          </div>
+        </div>
+
+        {/* form */}
+        <div className="lg:col-span-7 lg:order-2" data-rv="up" style={{ ["--d" as string]: "80ms" } as React.CSSProperties}>
+          <div className="rounded-[var(--r-l)] bg-white p-7 shadow-[var(--shadow-lift)] sm:p-10">
+            <h2 className="t-h3 mb-8">Contact Us</h2>
+
+            {submitted ? (
+              <div role="status" className="rounded-[var(--r-m)] bg-fin/[0.06] p-10 text-center">
+                <CheckCircle2 className="mx-auto h-12 w-12 text-fin" strokeWidth={1.6} aria-hidden />
+                <h3 className="mt-4 text-[1.35rem] font-semibold tracking-[-0.025em]">Inquiry Dispatched!</h3>
+                <p className="t-body mt-2">Our financial architects will contact you shortly.</p>
+              </div>
+            ) : (
+              <form className="space-y-6" onSubmit={handleSubmit}>
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  <div>
+                    <label htmlFor="c-name" className="field-label">Full Name</label>
+                    <input
+                      id="c-name"
+                      required
+                      autoComplete="name"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="field"
+                      placeholder="John Doe"
+                      type="text"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="c-email" className="field-label">Email</label>
+                    <input
+                      id="c-email"
+                      required
+                      autoComplete="email"
+                      inputMode="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="field"
+                      placeholder="john@company.com"
+                      type="email"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  <div>
+                    <label htmlFor="c-phone" className="field-label">Mobile Number</label>
+                    <input
+                      id="c-phone"
+                      required
+                      autoComplete="tel"
+                      inputMode="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="field"
+                      placeholder="+91 98765 43210"
+                      type="tel"
+                    />
+                  </div>
+                  <div>
+                    <span id="c-subject-label" className="field-label">Subject of Inquiry</span>
+                    <div className="relative" ref={subjectRef}>
+                      <button
+                        type="button"
+                        aria-haspopup="listbox"
+                        aria-expanded={subjectOpen}
+                        aria-labelledby="c-subject-label"
+                        onClick={() => setSubjectOpen((o) => !o)}
+                        className="field cursor-pointer pr-11 text-left"
+                      >
+                        {formData.subject.length ? (
+                          <span className="flex flex-wrap gap-1.5">
+                            {formData.subject.map((x) => (
+                              <span key={x} className="rounded-full bg-fin/10 px-2.5 py-0.5 text-[0.78rem] font-semibold text-fin">{x}</span>
+                            ))}
+                          </span>
+                        ) : (
+                          <span className="text-ink/40">Select one or more</span>
+                        )}
+                      </button>
+                      <ChevronDown
+                        aria-hidden
+                        className={`pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink/50 transition-transform duration-200 ${subjectOpen ? "rotate-180" : ""}`}
+                      />
+                      {subjectOpen && (
+                        <ul
+                          role="listbox"
+                          aria-multiselectable="true"
+                          className="absolute z-30 mt-2 max-h-72 w-full overflow-auto rounded-[14px] bg-white py-1.5 shadow-[var(--shadow-lift)]"
+                        >
+                          {SUBJECTS.map((name) => {
+                            const on = formData.subject.includes(name);
+                            return (
+                              <li key={name} role="option" aria-selected={on}>
+                                <button
+                                  type="button"
+                                  onClick={() => toggleSubject(name)}
+                                  className="flex w-full items-center gap-3 px-4 py-3 text-left text-[0.95rem] font-medium text-ink transition-colors hover:bg-paper"
+                                >
+                                  <span className={`flex h-[18px] w-[18px] items-center justify-center rounded-[5px] ${on ? "bg-fin" : "shadow-[inset_0_0_0_1.5px_var(--hair-strong)]"}`}>
+                                    {on && <Check className="h-3 w-3 text-white" strokeWidth={3} aria-hidden />}
+                                  </span>
+                                  {name}
+                                </button>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="c-message" className="field-label">Detailed Message</label>
+                  <textarea
+                    id="c-message"
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    className="field min-h-[140px] resize-none"
+                    placeholder="How can our financial architects assist you today?"
+                    rows={5}
+                  />
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <input
+                    required
+                    id="agree-checkbox"
+                    checked={formData.agree}
+                    onChange={(e) => setFormData({ ...formData, agree: e.target.checked })}
+                    className="mt-[3px] h-[18px] w-[18px] shrink-0 cursor-pointer accent-[#0066ff]"
+                    type="checkbox"
+                  />
+                  <label htmlFor="agree-checkbox" className="cursor-pointer select-none text-[0.9rem] leading-snug text-ink/65">
+                    I agree to the <a className="ulink font-semibold text-fin" href="/privacy-policy">Privacy Policy</a> regarding data handling.
+                  </label>
+                </div>
+
+                {submitError && (
+                  <p role="alert" className="text-sm font-semibold text-red-600">{submitError}</p>
+                )}
+
+                <button disabled={isSubmitting} className="btn btn-primary w-full md:w-auto" type="submit">
+                  {isSubmitting ? "Sending..." : "Submit"}
+                </button>
+              </form>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Map Section (Sleek Interactive Integration) */}
-      <motion.section
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="mt-20 relative group"
-      >
-        {/* Futuristic glowing backdrop */}
-        <div className="absolute -inset-1.5 bg-gradient-to-r from-[#0066FF] to-[#00B2FF] rounded-[2.2rem] blur-xl opacity-[0.08] group-hover:opacity-[0.15] transition duration-1000 group-hover:duration-300 pointer-events-none" />
-        
-        {/* Inner Container */}
-        <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-[#1a1a2e]/10 bg-white h-[480px] w-full">
+      {/* map */}
+      <section aria-label="Office location" className="relative" data-rv="fade">
+        <div className="group relative h-[clamp(22rem,56vw,34rem)] w-full overflow-hidden bg-paper-2">
           <iframe
             src="https://maps.google.com/maps?q=164,%20Frontier%20Colony,%20Adarsh%20Nagar,%20Jaipur,%20Rajasthan%20302004&t=&z=16&ie=UTF8&iwloc=&output=embed"
-            className="w-full h-full border-0 transition-all duration-[1200ms] ease-out filter grayscale-[100%] contrast-[1.05] brightness-[0.92] group-hover:grayscale-0 group-hover:brightness-100 group-hover:contrast-100"
+            className="h-full w-full border-0 grayscale contrast-[1.05] transition-[filter] duration-[1200ms] ease-out [@media(hover:hover)]:group-hover:grayscale-0 [@media(hover:none)]:grayscale-0"
             allowFullScreen
             loading="lazy"
             title="Fintness Finserv Office Map"
           />
-          
-          {/* Centered Glassmorphic floating card */}
-          <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
-            <div className="pointer-events-auto p-6 md:p-8 bg-white/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-2xl max-w-sm w-[320px] transition-all duration-700 group-hover:bg-white/95 group-hover:shadow-[0_25px_60px_-12px_rgba(0,102,255,0.25)]">
-              <div className="flex flex-col items-center gap-4">
-                {/* Animated MapPin wrapper */}
-                <div className="relative w-12 h-12 flex items-center justify-center shrink-0">
-                  <span className="absolute inset-0 rounded-full bg-[#0066FF]/20 animate-ping opacity-75" />
-                  <div className="relative w-10 h-10 bg-gradient-to-tr from-[#0066FF] to-[#00B2FF] text-white rounded-full flex items-center justify-center shadow-md">
-                    <MapPin className="w-5 h-5" strokeWidth={2} />
-                  </div>
-                </div>
-                
-                <div className="text-center">
-                  <h3 className="text-lg font-bold text-[#1a1a2e] mb-1.5 tracking-tight">Visit our Office</h3>
-                  <p className="text-[#1a1a2e]/60 text-xs md:text-sm mb-5 leading-relaxed">
-                    164, Frontier Colony, Adarsh Nagar, <br />
-                    Jaipur, Rajasthan – 302004
-                  </p>
-                  
-                  <a
-                    className="inline-flex items-center justify-center gap-2 px-5 py-3 w-full bg-[#0066FF] hover:bg-[#0052CC] text-white rounded-xl font-semibold text-xs tracking-wide shadow-md hover:shadow-lg hover:shadow-[#0066FF]/20 hover:-translate-y-0.5 active:translate-y-0 active:scale-98 transition-all duration-300"
-                    href="https://www.google.com/maps/place/164,+Frontier+Colony,+Adarsh+Nagar,+Jaipur,+Rajasthan+302004/@26.898986,75.8259343,17z/data=!3m1!4b1!4m6!3m5!1s0x396db69561b50927:0xafd01ffdd6135135!8m2!3d26.898986!4d75.8285092!16s%2Fg%2F11c1h40n3f?entry=ttu&g_ep=EgoyMDI2MDUyMC4wIKXMDSoASAFQAw%3D%3D"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Open in Google Maps
-                  </a>
-                </div>
-              </div>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 p-4 sm:p-8 lg:left-[var(--gutter)] lg:right-auto">
+            <div className="pointer-events-auto w-full max-w-[22rem] rounded-[var(--r-m)] bg-white p-6 shadow-[var(--shadow-lift)]">
+              <span aria-hidden className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-[image:var(--fin-grad)] text-white">
+                <MapPin className="h-5 w-5" strokeWidth={1.8} />
+              </span>
+              <h3 className="text-[1.15rem] font-semibold tracking-[-0.025em]">Visit our Office</h3>
+              <p className="t-small mt-1.5">
+                164, Frontier Colony, Adarsh Nagar, <br />
+                Jaipur, Rajasthan – 302004
+              </p>
+              <a
+                className="btn btn-primary btn-sm mt-5 w-full"
+                href="https://www.google.com/maps/place/164,+Frontier+Colony,+Adarsh+Nagar,+Jaipur,+Rajasthan+302004/@26.898986,75.8259343,17z/data=!3m1!4b1!4m6!3m5!1s0x396db69561b50927:0xafd01ffdd6135135!8m2!3d26.898986!4d75.8285092!16s%2Fg%2F11c1h40n3f?entry=ttu&g_ep=EgoyMDI2MDUyMC4wIKXMDSoASAFQAw%3D%3D"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open in Google Maps
+                <ArrowUpRight className="btn-arrow" aria-hidden />
+              </a>
             </div>
           </div>
         </div>
-      </motion.section>
+      </section>
     </main>
   );
 }
- 

@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { Shield, FileText, MapPin, Mail, Phone } from "lucide-react";
+import Image from "next/image";
+import { MapPin, Mail, Phone } from "lucide-react";
 
-// Inline Custom SVG Icons to avoid lucide version mismatches
+// Inline custom SVG icons to avoid lucide version mismatches
 const LinkedinIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}>
     <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
     <rect x="2" y="9" width="4" height="12" />
     <circle cx="4" cy="4" r="2" />
@@ -13,7 +14,7 @@ const LinkedinIcon = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}>
     <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
     <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
@@ -21,255 +22,171 @@ const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 const FacebookIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}>
     <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
   </svg>
 );
 
 const YoutubeIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}>
     <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z" />
     <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" />
   </svg>
 );
 
-const TwitterIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-    <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
-  </svg>
-);
+const linkCls =
+  "ulink inline-block py-[4px] text-[0.98rem] font-medium text-white/75 transition-colors duration-200 hover:text-white";
+const headCls = "mb-4 text-[0.82rem] font-semibold uppercase tracking-[0.14em] text-white/50";
 
 export default function Footer() {
   const socialLinks = [
-    {
-      name: "Facebook",
-      icon: FacebookIcon,
-      href: "https://www.facebook.com/fintness.finserv",
-      color: "hover:bg-[#1877F2] hover:text-white hover:border-[#1877F2]",
-    },
-    {
-      name: "Linkedin",
-      icon: LinkedinIcon,
-      href: "https://www.linkedin.com/company/team_fintness/",
-      color: "hover:bg-[#0A66C2] hover:text-white hover:border-[#0A66C2]",
-    },
-    {
-      name: "Instagram",
-      icon: InstagramIcon,
-      href: "https://www.instagram.com/fintness_finserv?igsh=djhhM2gyN2luOGZ1&utm_source=qr",
-      color: "hover:bg-[#E1306C] hover:text-white hover:border-[#E1306C]",
-    },
-    {
-      name: "Youtube",
-      icon: YoutubeIcon,
-      href: "https://www.youtube.com/@FINTNESSFINSERV",
-      color: "hover:bg-[#FF0000] hover:text-white hover:border-[#FF0000]",
-    },
+    { name: "Facebook", icon: FacebookIcon, href: "https://www.facebook.com/fintness.finserv" },
+    { name: "Linkedin", icon: LinkedinIcon, href: "https://www.linkedin.com/company/team_fintness/" },
+    { name: "Instagram", icon: InstagramIcon, href: "https://www.instagram.com/fintness_finserv?igsh=djhhM2gyN2luOGZ1&utm_source=qr" },
+    { name: "Youtube", icon: YoutubeIcon, href: "https://www.youtube.com/@FINTNESSFINSERV" },
   ];
 
   return (
-    <footer className="bg-[#141C2B] border-t border-white/[0.05] w-full pt-10 pb-6 md:pt-12 md:pb-6 px-6 md:px-12 mt-auto relative z-10 text-white">
-      <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
-        
-        {/* Top Grid: Brand & Navigation */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 lg:gap-8 pb-6">
-          
-          {/* Logo & Info */}
-          <div className="lg:col-span-3 space-y-5">
-            <div className="space-y-3">
-              <Link href="/" className="group flex items-center gap-4 transition-all duration-300">
-                {/* Logo Container */}
-                <div className="relative shrink-0">
-                  <div className="relative w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-[0_0_15px_rgba(0,102,255,0.15)] group-hover:scale-105 transition-transform duration-300 border border-white">
-                    <img src="/logo.png" alt="Fintness Finserv Logo" className="w-9 h-9 object-contain rounded-full" />
-                  </div>
-                </div>
+    <footer className="bg-night on-dark relative z-10 mt-auto w-full overflow-hidden border-t border-[var(--hair-dark)] text-white">
+      {/* background only: the brand name at the base of the footer, cut by the bottom edge, with a soft brand-blue
+          glow rising behind it. Absolutely positioned behind the content, so it adds no height and no spacing. */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 z-0 select-none overflow-hidden">
+        {/* the glow: a low, wide bloom from the base, kept faint so the links and disclaimer stay easy to read */}
+        <div
+          className="absolute inset-x-0 bottom-0 h-[62%]"
+          style={{
+            background:
+              "radial-gradient(60% 100% at 50% 100%, rgb(0 102 255 / 0.30) 0%, rgb(0 140 255 / 0.12) 45%, transparent 75%), radial-gradient(32% 70% at 50% 100%, rgb(0 178 255 / 0.16) 0%, transparent 100%)",
+          }}
+        />
+        <p
+          className="relative mx-auto w-fit translate-y-[30%] whitespace-nowrap text-center font-bold leading-[0.76] tracking-[-0.035em]"
+          style={{
+            fontSize: "clamp(4rem, 17.5vw, 17.5rem)",
+            color: "rgb(125 170 255 / 0.13)",
+            // brighter toward the base where the glow sits (-webkit- forms for Safari)
+            backgroundImage: "linear-gradient(180deg, rgb(125 170 255 / 0.11) 0%, rgb(150 195 255 / 0.34) 100%)",
+            WebkitBackgroundClip: "text",
+            backgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+          }}
+        >
+          FINTNESS
+        </p>
+      </div>
 
-                {/* Text Container */}
-                <div className="flex flex-col justify-center -space-y-0.5">
-                  <span className="font-black text-2xl md:text-3xl text-white tracking-tight">
-                    FINTNESS
-                  </span>
-                  <span className="font-bold text-[13px] md:text-[15px] text-transparent bg-clip-text bg-gradient-to-r from-[#00B2FF] to-[#0066FF] tracking-[0.25em] uppercase pl-0.5">
-                    Finserv
-                  </span>
-                </div>
-              </Link>
-              <div className="space-y-2 pt-2">
-                <a href="tel:+917852048886" className="flex items-center gap-2 text-sm md:text-base font-semibold text-white/90 hover:text-[#00B2FF] transition-colors">
-                  <Phone className="w-4 h-4 text-[#00B2FF] shrink-0" />
-                  <span>+91 78520 48886</span>
-                </a>
-                <a href="mailto:mail@fintness.in" className="flex items-center gap-2 text-sm md:text-base font-semibold text-white/90 hover:text-[#00B2FF] transition-colors">
-                  <Mail className="w-4 h-4 text-[#00B2FF] shrink-0" />
-                  <span>mail@fintness.in</span>
-                </a>
-              </div>
+      <div className="wrap relative z-10 pb-10 pt-14 md:pb-12 md:pt-20">
+        {/* brand + navigation */}
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-8">
+          <div className="lg:col-span-3">
+            <Link href="/" className="group flex items-center gap-3.5">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white transition-transform duration-300 group-hover:scale-105">
+                <Image src="/logo.png" alt="Fintness Finserv Logo" width={32} height={32} className="h-8 w-8 rounded-full object-contain" />
+              </span>
+              <span className="flex flex-col justify-center -space-y-0.5">
+                <span className="text-[1.6rem] font-bold leading-none tracking-[-0.04em] text-white">FINTNESS</span>
+                <span className="grad pl-0.5 text-[0.72rem] font-bold uppercase leading-none tracking-[0.3em]">Finserv</span>
+              </span>
+            </Link>
+
+            <div className="mt-7 space-y-3">
+              <a href="tel:+917852048886" className="flex items-center gap-2.5 text-[0.95rem] font-semibold text-white/90 transition-colors hover:text-[#6fb4ff]">
+                <Phone className="h-4 w-4 shrink-0 text-[#6fb4ff]" aria-hidden />
+                <span>+91 78520 48886</span>
+              </a>
+              <a href="mailto:mail@fintness.in" className="flex items-center gap-2.5 text-[0.95rem] font-semibold text-white/90 transition-colors hover:text-[#6fb4ff]">
+                <Mail className="h-4 w-4 shrink-0 text-[#6fb4ff]" aria-hidden />
+                <span>mail@fintness.in</span>
+              </a>
             </div>
 
-            {/* Social Links directly below it */}
-            <div className="flex items-center gap-2 pt-2">
+            <div className="mt-7 flex items-center gap-2">
               {socialLinks.map((social) => (
                 <a
                   key={social.name}
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`w-9 h-9 rounded-md bg-[#24324D]/60 border border-white/[0.08] flex items-center justify-center text-white/80 transition-all duration-300 ${social.color} hover:scale-105 shadow-sm`}
                   aria-label={social.name}
+                  className="flex h-10 w-10 items-center justify-center rounded-full text-white/70 shadow-[inset_0_0_0_1px_rgb(255_255_255/0.16)] transition-[color,box-shadow,scale] duration-200 active:scale-95 hover:text-white hover:shadow-[inset_0_0_0_1px_rgb(111_180_255/0.75)]"
                 >
-                  <social.icon className="w-4 h-4" />
+                  <social.icon className="h-[17px] w-[17px]" aria-hidden />
                 </a>
               ))}
             </div>
           </div>
 
-          {/* Quick Links Group */}
-          <div className="lg:col-span-9 grid grid-cols-2 sm:grid-cols-5 gap-6">
-            
-            {/* Company Links */}
+          <nav aria-label="Footer" className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:col-span-9 lg:grid-cols-5">
             <div>
-              <h3 className="text-xs font-bold text-white/50 uppercase tracking-widest mb-3">Company</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="/" className="text-xs text-white/75 hover:text-[#00B2FF] transition-colors font-medium">
-                    Home
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/about" className="text-xs text-white/75 hover:text-[#00B2FF] transition-colors font-medium">
-                    About Us
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/services" className="text-xs text-white/75 hover:text-[#00B2FF] transition-colors font-medium">
-                    Services
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/careers" className="text-xs text-white/75 hover:text-[#00B2FF] transition-colors font-medium">
-                    Careers
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contact" className="text-xs text-white/75 hover:text-[#00B2FF] transition-colors font-medium">
-                    Contact Us
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/events" className="text-xs text-white/75 hover:text-[#00B2FF] transition-colors font-medium">
-                    Events
-                  </Link>
-                </li>
+              <h3 className={headCls}>Company</h3>
+              <ul>
+                <li><Link href="/" className={linkCls}>Home</Link></li>
+                <li><Link href="/about" className={linkCls}>About Us</Link></li>
+                <li><Link href="/services" className={linkCls}>Services</Link></li>
+                <li><Link href="/careers" className={linkCls}>Careers</Link></li>
+                <li><Link href="/contact" className={linkCls}>Contact Us</Link></li>
+                <li><Link href="/events" className={linkCls}>Events</Link></li>
               </ul>
             </div>
 
-            {/* Advisory Links */}
             <div>
-              <h3 className="text-xs font-bold text-white/50 uppercase tracking-widest mb-3">Advisory</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="/services#wealth-management" className="text-xs text-white/75 hover:text-[#00B2FF] transition-colors font-medium">
-                    Wealth Management
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/services#investment-planning" className="text-xs text-white/75 hover:text-[#00B2FF] transition-colors font-medium">
-                    Investment Planning
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/services#risk-mitigation" className="text-xs text-white/75 hover:text-[#00B2FF] transition-colors font-medium">
-                    Risk Mitigation
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/services" className="text-xs text-white/75 hover:text-[#00B2FF] transition-colors font-medium">
-                    Estate Planning
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/services#tax-optimization" className="text-xs text-white/75 hover:text-[#00B2FF] transition-colors font-medium">
-                    Tax Optimization
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/services#loan-against-securities" className="text-xs text-white/75 hover:text-[#00B2FF] transition-colors font-medium">
-                    Loan Against Securities
-                  </Link>
-                </li>
+              <h3 className={headCls}>Advisory</h3>
+              <ul>
+                <li><Link href="/services#wealth-management" className={linkCls}>Wealth Management</Link></li>
+                <li><Link href="/services#investment-planning" className={linkCls}>Investment Planning</Link></li>
+                <li><Link href="/services#risk-mitigation" className={linkCls}>Risk Mitigation</Link></li>
+                <li><Link href="/services" className={linkCls}>Estate Planning</Link></li>
+                <li><Link href="/services#tax-optimization" className={linkCls}>Tax Optimization</Link></li>
+                <li><Link href="/services#loan-against-securities" className={linkCls}>Loan Against Securities</Link></li>
               </ul>
             </div>
 
-            {/* Resources Links */}
             <div>
-              <h3 className="text-xs font-bold text-white/50 uppercase tracking-widest mb-3">Resources</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="/#process" className="text-xs text-white/75 hover:text-[#00B2FF] transition-colors font-medium">
-                    Our Process
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/#events" className="text-xs text-white/75 hover:text-[#00B2FF] transition-colors font-medium">
-                    Client Testimonials
-                  </Link>
-                </li>
+              <h3 className={headCls}>Resources</h3>
+              <ul>
+                <li><Link href="/#process" className={linkCls}>Our Process</Link></li>
+                <li><Link href="/#events" className={linkCls}>Client Testimonials</Link></li>
               </ul>
             </div>
 
-            {/* Legal Documents */}
+            <div>
+              <h3 className={headCls}>Compliance</h3>
+              <ul>
+                <li><Link href="/privacy-policy" className={linkCls}>Privacy Policy</Link></li>
+                <li><Link href="/terms-of-service" className={linkCls}>Terms &amp; Conditions</Link></li>
+              </ul>
+            </div>
+
             <div className="col-span-2 sm:col-span-1">
-              <h3 className="text-xs font-bold text-white/50 uppercase tracking-widest mb-3">Compliance</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="/privacy-policy" className="text-xs text-white/75 hover:text-[#00B2FF] transition-colors font-medium flex items-center gap-1">
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/terms-of-service" className="text-xs text-white/75 hover:text-[#00B2FF] transition-colors font-medium flex items-center gap-1">
-                    Terms & Conditions
-                  </Link>
-                </li>
-              </ul>
+              <h3 className={headCls}>Registered Office</h3>
+              <p className="flex items-start gap-2 text-[0.98rem] font-medium leading-relaxed text-white/75">
+                <MapPin className="mt-[3px] h-3.5 w-3.5 shrink-0 text-[#6fb4ff]" aria-hidden />
+                <span>House No. 164, Adarsh Nagar, Jaipur, Rajasthan – 302004</span>
+              </p>
             </div>
-
-            <div className="col-span-2 sm:col-span-1 space-y-3">
-              <h3 className="text-xs font-bold text-white/50 uppercase tracking-widest mb-3">Registered Office</h3>
-              <ul className="space-y-5 text-xs text-white/75 font-medium">
-                <li className="flex items-start gap-2">
-                  <MapPin className="w-3.5 h-3.5 text-[#00B2FF] shrink-0 mt-0.5" />
-                  <span className="leading-relaxed">
-                    House No. 164, Adarsh Nagar, Jaipur, Rajasthan – 302004
-                  </span>
-                </li>
-              </ul>
-            </div>
-
-          </div>
+          </nav>
         </div>
 
-        {/* Centered Regulatory, AMFI & Copyright info */}
-        <div className="text-center space-y-4 pt-6 border-t border-white text-white">
-          <p className="text-xs md:text-sm leading-relaxed font-normal max-w-7xl mx-auto text-white/75">
-            <strong className="text-white">Disclaimer:</strong> Investments in Mutual Funds are subject to Market Risks. Read all scheme related documents carefully before investing. Mutual Fund Schemes do not assure or guarantee any returns. Past performances of any Mutual Fund Scheme may or may not be sustained in future. There is no guarantee that the investment objective of any suggested scheme shall be achieved. All existing and prospective investors are advised to check and evaluate the Exit loads and other cost structure (TER) applicable at the time of making the investment before finalizing on any investment decision for Mutual Funds schemes. We deal in Regular Plans only for Mutual Fund Schemes and earn a Trailing Commission on client investments. Disclosure For Commission earnings is made to clients at the time of investments. Option of Direct Plan for every Mutual Fund Scheme is available to investors offering advantage of lower expense ratio. We are not entitled to earn any commission on Direct plans. Hence we do not deal in Direct Plans.
+        {/* regulatory */}
+        <div className="mt-14 border-t border-[var(--hair-dark)] pt-8 md:mt-20">
+          <p className="max-w-[78rem] text-[0.78rem] leading-[1.75] text-white/55 md:text-[0.82rem]">
+            <strong className="font-semibold text-white/85">Disclaimer:</strong> Investments in Mutual Funds are subject to Market Risks. Read all scheme related documents carefully before investing. Mutual Fund Schemes do not assure or guarantee any returns. Past performances of any Mutual Fund Scheme may or may not be sustained in future. There is no guarantee that the investment objective of any suggested scheme shall be achieved. All existing and prospective investors are advised to check and evaluate the Exit loads and other cost structure (TER) applicable at the time of making the investment before finalizing on any investment decision for Mutual Funds schemes. We deal in Regular Plans only for Mutual Fund Schemes and earn a Trailing Commission on client investments. Disclosure For Commission earnings is made to clients at the time of investments. Option of Direct Plan for every Mutual Fund Scheme is available to investors offering advantage of lower expense ratio. We are not entitled to earn any commission on Direct plans. Hence we do not deal in Direct Plans.
           </p>
 
-          <p className="text-[10px] md:text-xs text-white/90 font-medium flex flex-wrap justify-center items-center gap-x-2 gap-y-1 pt-1">
+          <p className="mt-7 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[0.7rem] font-medium text-white/70 md:text-xs">
             <span>{new Date().getFullYear()} © Copyright Reserved by Fintness Finserv Pvt. Ltd.</span>
-            <span className="text-white/40">|</span>
-            <span className="text-white font-semibold">AMFI Registered Sub Distributor</span>
-            <span className="text-white/40">|</span>
-            <span className="text-white font-semibold">EUIN NO- E104126</span>
-            <span className="text-white/40">|</span>
-            <span className="text-white font-semibold">Reg. Date: 25 Oct 2025</span>
-            <span className="text-white/40">|</span>
-            <span className="text-white font-semibold">Valid Till: 24 Oct 2028</span>
+            <span aria-hidden className="text-white/25">|</span>
+            <span className="font-semibold text-white">AMFI Registered Sub Distributor</span>
+            <span aria-hidden className="text-white/25">|</span>
+            <span className="font-semibold text-white">EUIN NO- E104126</span>
+            <span aria-hidden className="text-white/25">|</span>
+            <span className="font-semibold text-white">Reg. Date: 25 Oct 2025</span>
+            <span aria-hidden className="text-white/25">|</span>
+            <span className="font-semibold text-white">Valid Till: 24 Oct 2028</span>
           </p>
         </div>
-
       </div>
+
     </footer>
   );
 }

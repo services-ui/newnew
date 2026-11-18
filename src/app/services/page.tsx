@@ -1,6 +1,3 @@
-"use client";
-
-import React from "react";
 import { ServicesHero } from "@/components/services/ServicesHero";
 import { WealthManagementSection } from "@/components/services/WealthManagementSection";
 import { InvestmentPlanningSection } from "@/components/services/InvestmentPlanningSection";
@@ -12,7 +9,7 @@ import { ServicesFAQ } from "@/components/services/ServicesFAQ";
 
 export default function ServicesPage() {
   return (
-    <main className="bg-white min-h-screen text-[#1a1a2e] font-sans overflow-hidden">
+    <main id="main" className="bg-white text-ink">
       <ServicesHero />
       <WealthManagementSection />
       <InvestmentPlanningSection />

@@ -1,6 +1,5 @@
-"use client";
-import { motion } from "framer-motion";
-import { SparklesText } from "@/components/ui/sparkles-text";
+import Image from "next/image";
+import RevealText from "@/components/ui/RevealText";
 
 const PHASES = [
   {
@@ -32,7 +31,7 @@ const PHASES = [
   {
     title: "Non-Resident Indians (NRIs)",
     category: "Global Mobility",
-    categoryColor: "#7c6baa",
+    categoryColor: "#0066FF",
     desc: "Seamless cross-border planning, NRE/NRO account optimization, and Indian market exposure management.",
     bullets: [
       "India-Focused Investment Planning",
@@ -45,7 +44,7 @@ const PHASES = [
   {
     title: "Modern Families",
     category: "Legacy Building",
-    categoryColor: "#c9852a",
+    categoryColor: "#00B2FF",
     desc: "Comprehensive insurance layering and estate planning to ensure smooth wealth transition for the next generation.",
     bullets: [
       "Estate & Succession Planning",
@@ -57,85 +56,103 @@ const PHASES = [
   },
 ];
 
+/**
+ * Who We Serve — each audience is a whole photograph (shown at its natural 3:2 proportions, never sliced
+ * into a narrow strip), set with depth: a tinted plate behind it, a deep soft shadow, and a white plate
+ * with the details overlapping its lower edge. The second column sits lower for rhythm.
+ */
 export default function LifePhaseSection() {
   return (
-    <section className="py-16 md:py-20 lg:py-24 px-6 max-w-7xl mx-auto w-full relative">
-      <div className="mb-20 flex flex-col items-center text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="flex flex-col items-center"
-        >
-          <SparklesText 
-            text="Who We Serve?" 
-            colors={{ first: "#0066FF", second: "#00B2FF" }} 
-            className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl tracking-tight mb-4"
+    <section className="sec relative overflow-hidden bg-white" aria-labelledby="serve-title">
+      {/* a soft blue wash behind the grid so the shadows have something to fall on */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 top-[30%] bg-[linear-gradient(180deg,transparent,rgb(233_241_255/0.7)_35%,transparent)]"
+      />
+      <div className="wrap relative">
+        <div className="grid items-end gap-6 lg:grid-cols-12 lg:gap-16">
+          <RevealText
+            as="h2"
+            id="serve-title"
+            className="text-balance text-[clamp(2.1rem,3.8vw,3.2rem)] font-semibold leading-[1.08] tracking-[-0.03em] lg:col-span-7"
+            parts={["Who We Serve?"]}
           />
-          <p className="text-[#1a1a2e]/50 text-base md:text-lg font-light leading-relaxed mt-5 max-w-2xl">
+          <p className="t-lead !text-[clamp(1.05rem,1.3vw,1.2rem)] lg:col-span-5" data-rv="up">
             We specialize in solving the complex financial challenges of high-achieving individuals and families.
           </p>
-        </motion.div>
-      </div>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {PHASES.map((phase, idx) => (
-          <motion.div
-            key={idx}
-            initial={{ opacity: 0, x: idx % 2 === 0 ? -50 : 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ delay: 0.1, duration: 0.6, ease: "easeOut" }}
-            className="group bg-[#f0f4fa] rounded-3xl overflow-hidden flex flex-col hover:shadow-xl transition-shadow duration-500 h-full"
-          >
-            {/* Image Side - Top Part */}
-            <div className="relative w-full aspect-video overflow-hidden shrink-0">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={phase.image}
-                alt={phase.title}
-                className={`absolute inset-0 w-full h-full object-cover ${phase.imagePosition || "object-center"} transition-transform duration-[1200ms] ease-out group-hover:scale-110`}
-              />
-            </div>
+        <ul className="mt-14 grid gap-x-10 gap-y-16 md:grid-cols-2 lg:mt-20 lg:gap-x-14 lg:gap-y-20">
+          {PHASES.map((phase, i) => (
+            <li
+              key={phase.title}
+              data-rv="up"
+              style={{ ["--d" as string]: `${(i % 2) * 120}ms` } as React.CSSProperties}
+              className={`group ${i % 2 === 1 ? "md:mt-20" : ""}`}
+            >
+              <div className="relative">
+                {/* the plate peeking out behind the photograph */}
+                <span
+                  aria-hidden
+                  className={`absolute inset-0 rounded-[var(--r-l)] bg-[linear-gradient(135deg,rgb(0_102_255/0.2),rgb(0_178_255/0.12))] transition-transform duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+                    i % 2 === 0
+                      ? "translate-x-3.5 translate-y-3.5 rotate-[1.4deg] group-hover:translate-x-5 group-hover:translate-y-5"
+                      : "-translate-x-3.5 translate-y-3.5 -rotate-[1.4deg] group-hover:-translate-x-5 group-hover:translate-y-5"
+                  }`}
+                />
+                {/* the photograph: whole, 3:2, lit from above */}
+                <div className="relative aspect-[3/2] overflow-hidden rounded-[var(--r-l)] bg-paper-2 shadow-[0_50px_70px_-34px_rgb(0_40_120/0.5),0_18px_30px_-18px_rgb(11_21_38/0.35),0_0_0_1px_rgb(11_21_38/0.06)]">
+                  <Image
+                    src={phase.image}
+                    alt={phase.title}
+                    fill
+                    sizes="(min-width: 1024px) 560px, (min-width: 768px) 45vw, 100vw"
+                    className={`object-cover ${phase.imagePosition} transition-transform duration-[1200ms] ease-[cubic-bezier(0.23,1,0.32,1)] motion-safe:group-hover:scale-[1.035]`}
+                  />
+                  {/* depth: a light edge and a soft sheen, not a dark wash */}
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 rounded-[inherit] bg-[linear-gradient(160deg,rgb(255_255_255/0.22),transparent_38%)] shadow-[inset_0_1px_0_rgb(255_255_255/0.5),inset_0_-60px_80px_-60px_rgb(0_20_60/0.25)]"
+                  />
+                  <span
+                    aria-hidden
+                    className="tnum absolute left-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-white/95 font-mono text-[0.85rem] font-semibold text-fin shadow-[0_8px_20px_-8px_rgb(0_0_0/0.4)]"
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                </div>
 
-            {/* Content Side - Bottom Part */}
-            <div className="flex flex-col justify-between p-6 md:p-8 flex-1">
-              <div>
-                {/* Title */}
-                <h3 className="text-xl sm:text-2xl font-bold text-[#1a1a2e] tracking-tight leading-tight mb-4">
-                  {phase.title}
-                </h3>
-
-                {/* Bullet Points */}
-                <div className="space-y-2.5">
-                  {phase.bullets.map((bullet, bIdx) => (
-                    <div key={bIdx} className="flex items-center gap-2.5">
-                      <svg
-                        className="w-4 h-4 shrink-0"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <circle cx="10" cy="10" r="10" fill={phase.categoryColor} fillOpacity="0.12" />
-                        <path
-                          d="M6.5 10.5L8.5 12.5L13.5 7.5"
-                          stroke={phase.categoryColor}
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                      <span className="text-sm font-semibold text-[#1a1a2e]/80">
-                        {bullet}
-                      </span>
-                    </div>
-                  ))}
+                {/* the details: a white plate overlapping the photograph's lower edge */}
+                <div
+                  className={`relative z-10 -mt-12 rounded-[var(--r-m)] bg-white p-7 shadow-[0_30px_50px_-24px_rgb(0_40_120/0.45),0_0_0_1px_rgb(11_21_38/0.05)] transition-transform duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] motion-safe:group-hover:-translate-y-1.5 sm:p-8 ${
+                    i % 2 === 0 ? "mr-6 sm:mr-12" : "ml-6 sm:ml-12"
+                  }`}
+                >
+                  <h3 className="text-balance text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.028em] text-ink sm:text-[1.65rem]">
+                    {phase.title}
+                  </h3>
+                  <ul className="mt-5 grid gap-3 border-t border-hair pt-5">
+                    {phase.bullets.map((bullet) => (
+                      <li key={bullet} className="flex items-start gap-3 text-[1.05rem] font-medium leading-snug text-ink/80">
+                        <svg className="mt-[3px] h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="none" aria-hidden>
+                          <circle cx="10" cy="10" r="10" fill={phase.categoryColor} fillOpacity="0.13" />
+                          <path
+                            d="M6.5 10.5L8.5 12.5L13.5 7.5"
+                            stroke={phase.categoryColor}
+                            strokeWidth="1.7"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                        <span>{bullet}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
-            </div>
-          </motion.div>
-        ))}
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );

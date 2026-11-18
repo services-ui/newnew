@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { SparklesText } from "@/components/ui/sparkles-text";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { Target, Fingerprint, Layers, Scale, TrendingUp, Users, Handshake } from "lucide-react";
+import RevealText from "@/components/ui/RevealText";
 
 const ITEMS = [
   {
@@ -50,202 +50,156 @@ const ITEMS = [
   },
 ];
 
+/**
+ * Why Us — seven principles, all readable at once: icon · title · explanation on one ruled row.
+ * The heading stays beside them with a quiet counter that follows the row you are reading
+ * (a scroll-spy; nothing is pinned, timed or auto-advanced).
+ */
 export default function WhyUsOrbital() {
-  const [activeIdx, setActiveIdx] = useState(0);
-  const [rotation, setRotation] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
+  // `target` is where the reading position says we are (computed from scroll, so it is never missed);
+  // `active` is what is shown and steps toward it one row at a time, so a fast flick can't skip 02.
+  const [active, setActive] = useState(0);
+  const [target, setTarget] = useState(0);
+  const listRef = useRef<HTMLOListElement>(null);
 
-  // Auto-rotate the orbital and auto-cycle the active item
   useEffect(() => {
-    // Rotate the orbital smoothly regardless of pause, but maybe pause it too?
-    // Let's just keep the orbital spinning slowly, it looks cool.
-    const rotationInterval = setInterval(() => {
-      setRotation((prev) => prev + 0.15);
-    }, 20);
-
-    return () => clearInterval(rotationInterval);
+    const list = listRef.current;
+    if (!list) return;
+    let raf = 0;
+    const measure = () => {
+      raf = 0;
+      const rows = Array.from(list.children) as HTMLElement[];
+      const focus = window.innerHeight * 0.45; // the line we "read" along
+      let best = 0;
+      let bestDist = Infinity;
+      rows.forEach((row, i) => {
+        const r = row.getBoundingClientRect();
+        // distance from the focus line to the row (0 when the line is inside it)
+        const d = focus < r.top ? r.top - focus : focus > r.bottom ? focus - r.bottom : 0;
+        if (d < bestDist) {
+          bestDist = d;
+          best = i;
+        }
+      });
+      setTarget((prev) => (prev === best ? prev : best));
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(measure);
+    };
+    measure();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, []);
 
+  // walk toward the target one step at a time (every number is shown, in order)
   useEffect(() => {
-    if (isPaused) return;
-    
-    // Auto cycle the active item every 2.5 seconds
-    const cycleInterval = setInterval(() => {
-      setActiveIdx((prev) => (prev + 1) % ITEMS.length);
-    }, 2500);
-
-    return () => clearInterval(cycleInterval);
-  }, [isPaused, activeIdx]);
-
-  const activeItem = ITEMS[activeIdx];
-  const ActiveIcon = activeItem.icon;
-  const RADIUS = 180; // orbital radius in px
+    if (active === target) return;
+    const t = window.setTimeout(() => setActive((a) => a + Math.sign(target - a)), 130);
+    return () => window.clearTimeout(t);
+  }, [active, target]);
 
   return (
-    <section className="py-24 md:py-32 px-6 w-full relative overflow-hidden bg-[#FAFAFC]">
-      {/* Ambient glows */}
-      <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-[120px] opacity-10 bg-[#0066FF] pointer-events-none" />
-      <div className="absolute bottom-10 left-0 w-80 h-80 rounded-full blur-[100px] opacity-10 bg-[#00B2FF] pointer-events-none" />
+    <section className="sec bg-paper" aria-labelledby="why-title">
+      <div className="wrap grid items-start gap-12 lg:grid-cols-12 lg:gap-16">
+        {/* heading on top, the progress ring centred in the rest of the column; it stays put while you read */}
+        <div className="lg:sticky lg:top-24 lg:col-span-4 lg:flex lg:h-[calc(100svh-8rem)] lg:min-h-[30rem] lg:flex-col">
+          <RevealText as="h2" id="why-title" className="t-h1" parts={["Why Us?"]} />
 
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-16 lg:gap-10">
-        
-        {/* Left Side: Content & Title */}
-        <div className="flex-1 w-full max-w-xl z-10 flex flex-col justify-center">
-          <div className="mb-10 lg:mb-12 text-center lg:text-left">
-            <SparklesText 
-              text="Why Us?" 
-              colors={{ first: "#0066FF", second: "#00B2FF" }} 
-              className="text-4xl md:text-5xl lg:text-7xl mb-4 lg:mb-6"
-            />
-          </div>
-
-          {/* Active Item Display Box */}
-          <div 
-            className="relative h-[300px] md:h-[240px] bg-white rounded-3xl border border-slate-200 shadow-sm shadow-slate-200/50 overflow-hidden"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-          >
-            {/* Glowing top border */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#0066FF] to-[#00B2FF]" />
-            
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeItem.id}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-                className="absolute inset-0 p-8 md:p-10 flex flex-col justify-center"
-              >
-                <div className="flex items-center gap-5 mb-5">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#0066FF]/10 to-[#00B2FF]/10 flex shrink-0 items-center justify-center border border-[#0066FF]/10 shadow-sm">
-                    <ActiveIcon className="w-7 h-7 text-[#0066FF]" />
-                  </div>
-                  <h3 className="text-2xl md:text-3xl font-bold text-[#1a1a2e] tracking-tight">
-                    {activeItem.title}
-                  </h3>
-                </div>
-                <p className="text-[#1a1a2e]/60 text-base md:text-lg leading-relaxed font-medium">
-                  {activeItem.description}
-                </p>
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Progress Bar for the active item */}
-            <div className="absolute bottom-0 left-0 w-full h-1 bg-slate-100">
-               {!isPaused && (
-                 <motion.div 
-                   key={`progress-${activeItem.id}`}
-                   initial={{ width: "0%" }}
-                   animate={{ width: "100%" }}
-                   transition={{ duration: 2.5, ease: "linear" }}
-                   className="h-full bg-gradient-to-r from-[#0066FF] to-[#00B2FF]"
-                 />
-               )}
-            </div>
-          </div>
-        </div>
-
-        {/* Right Side: Orbital System */}
-        <div 
-          className="flex-1 w-full flex justify-center items-center py-10 lg:py-0 mt-8 lg:mt-0"
-        >
-          <div
-            className="relative scale-90 md:scale-100"
-            style={{ width: RADIUS * 2 + 100, height: RADIUS * 2 + 100 }}
-          >
-            {/* Orbital rings */}
-            <div
-              className="absolute rounded-full border border-slate-200 pointer-events-none"
-              style={{
-                width: RADIUS * 2, height: RADIUS * 2,
-                top: "50%", left: "50%", transform: "translate(-50%, -50%)",
-              }}
-            />
-            <div
-              className="absolute rounded-full border border-dashed border-[#0066FF]/25 pointer-events-none animate-[spin_60s_linear_infinite]"
-              style={{
-                width: RADIUS * 2 + 80, height: RADIUS * 2 + 80,
-                top: "50%", left: "50%", transform: "translate(-50%, -50%)",
-              }}
-            />
-
-            {/* Center Logo */}
-            <div
-              className="absolute z-20 flex flex-col items-center justify-center"
-              style={{ top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}
-            >
-              <div className="absolute w-32 h-32 rounded-full border border-[#0066FF]/15" />
-              <div className="absolute w-36 h-36 rounded-full border border-[#0066FF]/5" />
-              <div className="absolute w-24 h-24 rounded-full bg-[#0066FF]/5 blur-[15px]" />
-              <div className="relative w-24 h-24 rounded-full bg-white shadow-md border border-slate-100 z-30 flex items-center justify-center">
-                <img src="/logo.png" alt="Logo" className="w-14 h-14 object-contain" />
+          <div aria-hidden className="hidden flex-1 flex-col items-center justify-center gap-7 lg:flex">
+            <div className="relative h-[15rem] w-[15rem] shrink-0 xl:h-[16.5rem] xl:w-[16.5rem]">
+              {/* a soft light behind the ring so it never reads as an empty outline */}
+              <div
+                className="absolute inset-[-12%] rounded-full"
+                style={{ background: "radial-gradient(closest-side, rgb(0 102 255 / 0.14), transparent)" }}
+              />
+              <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full -rotate-90">
+                <circle cx="50" cy="50" r="46" fill="none" stroke="var(--hair-strong)" strokeWidth="0.6" />
+                <circle cx="50" cy="50" r="38" fill="none" stroke="var(--hair)" strokeWidth="0.4" strokeDasharray="0.8 2.2" />
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="46"
+                  fill="none"
+                  stroke="var(--fin)"
+                  strokeWidth="1.3"
+                  strokeLinecap="round"
+                  pathLength={1}
+                  strokeDasharray={1}
+                  strokeDashoffset={1 - (active + 1) / ITEMS.length}
+                  style={{ transition: "stroke-dashoffset 700ms cubic-bezier(0.23, 1, 0.32, 1)" }}
+                />
+                {ITEMS.map((_, i) => {
+                  const a = (i / ITEMS.length) * Math.PI * 2;
+                  return (
+                    <circle
+                      key={i}
+                      cx={50 + 46 * Math.cos(a)}
+                      cy={50 + 46 * Math.sin(a)}
+                      r="1.5"
+                      fill={i <= active ? "var(--fin)" : "#fff"}
+                      stroke={i <= active ? "var(--fin)" : "var(--hair-strong)"}
+                      strokeWidth="0.6"
+                      style={{ transition: "fill 400ms ease, stroke 400ms ease" }}
+                    />
+                  );
+                })}
+              </svg>
+              <div className="absolute inset-[15%] flex items-center justify-center rounded-full bg-white shadow-[var(--shadow-lift)]">
+                <Image src="/logo.png" alt="" width={96} height={96} className="h-[60%] w-[60%] object-contain" />
               </div>
             </div>
 
-            {/* Orbital Nodes */}
-            {ITEMS.map((item, index) => {
-              const isActive = activeIdx === index;
-              const angle = (index / ITEMS.length) * 360 + rotation;
-              const rad = (angle * Math.PI) / 180;
-              const x = Number((Math.cos(rad) * RADIUS).toFixed(3));
-              const y = Number((Math.sin(rad) * RADIUS).toFixed(3));
-              const NodeIcon = item.icon;
-
-              return (
-                <div
-                  key={item.id}
-                  className="absolute z-10"
-                  style={{
-                    top: "50%", left: "50%",
-                    transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
-                  }}
-                >
-                  {/* Connector line to center */}
-                  <svg className="absolute pointer-events-none" style={{ width: "1px", height: "1px", overflow: "visible", top: "50%", left: "50%", zIndex: -1 }}>
-                    <line
-                      x1="0" y1="0" x2={-x} y2={-y}
-                      stroke={isActive ? "rgba(0,102,255,0.5)" : "rgba(148,163,184,0.3)"}
-                      strokeWidth={isActive ? "2" : "1"}
-                      strokeDasharray={isActive ? "0" : "4 4"}
-                      className="transition-all duration-500"
-                    />
-                  </svg>
-
-                  {/* Node Button */}
-                  <button
-                    onClick={() => setActiveIdx(index)}
-                    onMouseEnter={() => setIsPaused(true)}
-                    onMouseLeave={() => setIsPaused(false)}
-                    className={`
-                      relative group cursor-pointer transition-all duration-500 flex items-center justify-center rounded-full
-                      ${isActive ? "scale-[1.35] z-40" : "scale-100 hover:scale-110 z-30"}
-                      w-14 h-14
-                    `}
-                  >
-                    {/* Glow ring for active */}
-                    {isActive && (
-                      <div className="absolute -inset-3 rounded-full bg-[#0066FF]/10 blur-[10px] pointer-events-none" />
-                    )}
-
-                    {/* Node Circle */}
-                    <div
-                      className={`
-                        relative w-full h-full rounded-full flex items-center justify-center transition-all duration-500
-                        ${isActive
-                          ? "bg-gradient-to-br from-[#0066FF] to-[#00B2FF] shadow-[0_4px_15px_rgba(0,102,255,0.25)] border border-white text-white"
-                          : "bg-white shadow-sm border border-slate-200 text-[#1a1a2e]/40 hover:text-[#0066FF] hover:border-[#0066FF]/20 hover:shadow-md"
-                        }
-                      `}
-                    >
-                      <NodeIcon className={`w-6 h-6 transition-colors duration-300 ${isActive ? "text-white" : ""}`} />
-                    </div>
-                  </button>
-                </div>
-              );
-            })}
+            <p className="tnum text-center font-mono text-[0.8rem] tracking-wide text-ink/45">
+              <span className="text-[2.2rem] font-semibold leading-none tracking-[-0.035em] text-fin">
+                {String(active + 1).padStart(2, "0")}
+              </span>
+              <span className="ml-2">of {String(ITEMS.length).padStart(2, "0")}</span>
+            </p>
           </div>
         </div>
+
+        {/* the seven principles */}
+        <ol ref={listRef} className="border-t border-ink lg:col-span-8">
+          {ITEMS.map((item, i) => {
+            const on = active === i;
+            return (
+              <li
+                key={item.id}
+                data-rv="up"
+                className="group relative grid grid-cols-[2.75rem_minmax(0,1fr)] gap-x-5 gap-y-3 border-b border-hair py-7 md:grid-cols-[2.75rem_minmax(0,0.95fr)_minmax(0,1.05fr)] md:gap-x-8 md:py-9"
+              >
+                {/* a rule that draws along the top of the row you are on */}
+                <span
+                  aria-hidden
+                  className={`absolute -top-px left-0 h-px w-full origin-left bg-fin transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+                    on ? "scale-x-100" : "scale-x-0"
+                  }`}
+                />
+                <span
+                  aria-hidden
+                  className={`flex h-11 w-11 items-center justify-center rounded-full transition-[background-color,color] duration-300 ${
+                    on ? "bg-fin text-white" : "bg-ink/[0.05] text-ink/55"
+                  }`}
+                >
+                  <item.icon className="h-5 w-5" strokeWidth={1.6} />
+                </span>
+                <h3
+                  className={`self-center text-[clamp(1.1rem,1.5vw,1.3rem)] font-semibold leading-[1.25] tracking-[-0.02em] transition-colors duration-300 ${
+                    on ? "text-ink" : "text-ink/80"
+                  }`}
+                >
+                  {item.title}
+                </h3>
+                <p className="t-body col-start-2 md:col-start-3 md:row-start-1 md:self-center">{item.description}</p>
+              </li>
+            );
+          })}
+        </ol>
       </div>
     </section>
   );
