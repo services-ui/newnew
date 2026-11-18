@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Mail, Phone } from "lucide-react";
 import RevealText from "@/components/ui/RevealText";
 import { CtaLink } from "@/components/ui/cta";
 import ValuesSection from "@/components/ValuesSection";
@@ -214,14 +215,14 @@ export default function AboutPage() {
         />
       </section>
 
-      {/* 7 — call to action */}
+      {/* 7 — call to action: the message on the left; the button and the real ways to reach us together on the right */}
       <section className="bg-night on-dark grain relative isolate overflow-hidden" aria-labelledby="about-cta-title">
         <div
           aria-hidden
-          className="pointer-events-none absolute -right-[10%] -top-1/2 -z-10 h-[160%] w-[60%] opacity-70 blur-[100px]"
-          style={{ background: "radial-gradient(closest-side, rgb(0 102 255 / 0.5), transparent)" }}
+          className="pointer-events-none absolute -right-[8%] -top-1/2 -z-10 h-[170%] w-[55%]"
+          style={{ background: "radial-gradient(closest-side, rgb(0 102 255 / 0.34), transparent)" }}
         />
-        <div className="wrap grid items-end gap-10 py-[clamp(72px,10vw,144px)] lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-16">
+        <div className="wrap grid items-center gap-10 py-[clamp(52px,6.5vw,88px)] lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-20">
           <div>
             <RevealText
               as="h2"
@@ -229,14 +230,43 @@ export default function AboutPage() {
               className="t-h1 max-w-[17ch] text-white"
               parts={["Start Your Financial Fitness Journey Today"]}
             />
-            <p className="mt-7 max-w-[32rem] text-[clamp(1.05rem,1.35vw,1.25rem)] leading-[1.55] text-[var(--on-dark-soft)]" data-rv="up">
+            <p className="mt-6 max-w-[32rem] text-[clamp(1.05rem,1.35vw,1.2rem)] leading-[1.55] text-[var(--on-dark-soft)]" data-rv="up">
               Build a financially secure future with structured planning and personalized financial guidance.
             </p>
           </div>
-          <div data-rv="up" style={{ ["--d" as string]: "120ms" } as React.CSSProperties}>
-            <CtaLink href="/contact" variant="light" arrow>
+
+          <div
+            data-rv="up"
+            style={{ ["--d" as string]: "120ms" } as React.CSSProperties}
+            className="w-full max-w-[28rem] rounded-[var(--r-m)] border border-white/12 bg-white/[0.045] p-5 sm:p-6 lg:justify-self-end"
+          >
+            <CtaLink href="/contact" variant="light" arrow className="w-full">
               Schedule a Consultation
             </CtaLink>
+            <ul className="mt-5 border-t border-white/12 pt-3">
+              <li>
+                <a
+                  href="tel:+917852048886"
+                  className="flex items-center gap-3.5 rounded-xl px-2 py-3 text-[1.02rem] font-medium text-white/85 transition-colors duration-200 hover:bg-white/[0.06] hover:text-white"
+                >
+                  <span aria-hidden className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/[0.08] text-[#6fb4ff]">
+                    <Phone className="h-[1.05rem] w-[1.05rem]" strokeWidth={1.8} />
+                  </span>
+                  +91 78520 48886
+                </a>
+              </li>
+              <li>
+                <a
+                  href="mailto:mail@fintness.in"
+                  className="flex items-center gap-3.5 rounded-xl px-2 py-3 text-[1.02rem] font-medium text-white/85 transition-colors duration-200 hover:bg-white/[0.06] hover:text-white"
+                >
+                  <span aria-hidden className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/[0.08] text-[#6fb4ff]">
+                    <Mail className="h-[1.05rem] w-[1.05rem]" strokeWidth={1.8} />
+                  </span>
+                  mail@fintness.in
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
       </section>
